@@ -1,0 +1,18 @@
+import pygame
+
+cell_size=19
+SCREEN_HEIGHT=cell_size*36
+SCREEN_WIDTH=cell_size*28
+
+WHITE=(255,255,255)
+GRAY=(150,150,150)
+BLACK=(0,0,0)
+PINK=(255, 179, 217)
+GREEN=(0,255,0)
+DARK_GREEN=(0,150,0)
+RED=(255,0,0)
+BACKGROUND_COLOR = BLACK
+GRID_COLOR=WHITE
+pieces_colors=[RED, (255,130,0), (255,255,0),GREEN, (0,0,255),(255,0,255)]
+flags=(pygame.HWSURFACE | pygame.DOUBLEBUF)
+INPUTS=[pygame.K_RIGHT, pygame.K_DOWN, pygame.K_LEFT, pygame.K_UP]
