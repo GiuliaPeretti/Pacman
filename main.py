@@ -11,6 +11,7 @@ class Cell:
         self.col=col
         self.wall=wall
         self.food=food
+        self.pacman=False
 
     def is_wall(self):
         return self.wall
@@ -18,6 +19,8 @@ class Cell:
     def draw_cell(self, screen):
         if self.wall:
             color=(0,0,255)
+        elif self.pacman:
+            color=(255,255,0)
         else:
             color=(0,0,0)
 
@@ -28,6 +31,11 @@ class Cell:
         pygame.draw.line(screen, GRID_COLOR, (x+cell_size,y),(x+cell_size,y+cell_size), line_width)
         pygame.draw.line(screen, GRID_COLOR, (x,y+cell_size),(x+cell_size,y+cell_size), line_width)
         pygame.draw.line(screen, GRID_COLOR, (x,y),(x,y+cell_size), line_width)
+
+    def set_pacman(self, b):
+        self.pacman=b
+
+class 
 
     
 
@@ -88,6 +96,7 @@ def init_grid():
     f = open("not_walls.txt", "r")
     walkable = ast.literal_eval(f.read())
     f.close()
+
     for row in range (height_in_cell):
         temp=[]
         for col in range (width_in_cell):
@@ -97,6 +106,7 @@ def init_grid():
                 wall=False
             temp.append(Cell(row, col, wall, food))
         grid.append(temp)
+    grid[26][14].set_pacman(True)
                 
 def draw_cells():
     global grid
@@ -125,6 +135,61 @@ def display_img():
         imp = pygame.image.load(images[i]).convert()
         screen.blit(imp, (i*cell_size,0))
 
+def handle_movements(dir):
+    match(dir):
+        case 0: 
+            #UP
+            if pacman_pos[0]-1!=-1 and not grid[pacman_pos[0]-1][pacman_pos[1]].is_wall():
+                grid[pacman_pos[0]][pacman_pos[1]].set_pacman(b=False)
+                grid[pacman_pos[0]][pacman_pos[1]].draw_cell(screen)
+                grid[pacman_pos[0]-1][pacman_pos[1]].set_pacman(b=True)
+                grid[pacman_pos[0]-1][pacman_pos[1]].draw_cell(screen)
+                pacman_pos[0]=pacman_pos[0]-1
+        case 1:
+            #RIGHT
+            if pacman_pos[1]+1==len(grid[0]) and pacman_pos[0]==17:
+                grid[pacman_pos[0]][pacman_pos[1]].set_pacman(b=False)
+                grid[pacman_pos[0]][pacman_pos[1]].draw_cell(screen)
+                grid[pacman_pos[0]][0].set_pacman(b=True)
+                grid[pacman_pos[0]][0].draw_cell(screen)
+                pacman_pos[1]=0  
+                return             
+
+            if pacman_pos[1]+1!=len(grid[0]) and not grid[pacman_pos[0]][pacman_pos[1]+1].is_wall():
+                grid[pacman_pos[0]][pacman_pos[1]].set_pacman(b=False)
+                grid[pacman_pos[0]][pacman_pos[1]].draw_cell(screen)
+                grid[pacman_pos[0]][pacman_pos[1]+1].set_pacman(b=True)
+                grid[pacman_pos[0]][pacman_pos[1]+1].draw_cell(screen)
+                pacman_pos[1]=pacman_pos[1]+1
+        case 2:
+            #DOWN
+            if pacman_pos[0]+1!=len(grid[0]) and not grid[pacman_pos[0]+1][pacman_pos[1]].is_wall():
+                grid[pacman_pos[0]][pacman_pos[1]].set_pacman(b=False)
+                grid[pacman_pos[0]][pacman_pos[1]].draw_cell(screen)
+                grid[pacman_pos[0]+1][pacman_pos[1]].set_pacman(b=True)
+                grid[pacman_pos[0]+1][pacman_pos[1]].draw_cell(screen)
+                pacman_pos[0]=pacman_pos[0]+1
+        case 3:
+            #LEFT
+            if pacman_pos[1]-1==-1 and pacman_pos[0]==17:
+                grid[pacman_pos[0]][pacman_pos[1]].set_pacman(b=False)
+                grid[pacman_pos[0]][pacman_pos[1]].draw_cell(screen)
+                grid[pacman_pos[0]][27].set_pacman(b=True)
+                grid[pacman_pos[0]][27].draw_cell(screen)
+                pacman_pos[1]=27     
+                return
+            
+            if pacman_pos[1]-1!=-1 and not grid[pacman_pos[0]][pacman_pos[1]-1].is_wall():
+                grid[pacman_pos[0]][pacman_pos[1]].set_pacman(b=False)
+                grid[pacman_pos[0]][pacman_pos[1]].draw_cell(screen)  
+                grid[pacman_pos[0]][pacman_pos[1]-1].set_pacman(b=True)
+                grid[pacman_pos[0]][pacman_pos[1]-1].draw_cell(screen)
+                pacman_pos[1]=pacman_pos[1]-1
+            
+
+        
+        
+
 
 pygame.init()
 clock=pygame.time.Clock()
@@ -135,6 +200,7 @@ font = pygame.font.SysFont('arial', 20)
 
 
 grid=[]
+pacman_pos=[26,14]
 init_grid()
 draw_background()
 draw_grid(cell_size)
@@ -162,7 +228,8 @@ while run:
         if (event.type == pygame.KEYDOWN):
             for i in range(len(INPUTS)):
                 if (event.key==INPUTS[i]):
-                    pass
+                    handle_movements(i)
+                    break
 
     pygame.display.flip()
     clock.tick(30)
