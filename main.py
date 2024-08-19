@@ -105,7 +105,7 @@ class Blinky:
             match(self.mode):
                 case 0:
                     #Scatter 0,25
-                    target+[0,25]
+                    target=[0,25]
                 case 1:
                     #Chase
                     return
@@ -117,7 +117,13 @@ class Blinky:
             possible_dir=[[-1,0], [0,+1], [+1,0], [0,-1]]
             selected_dir=-1
             for i in valids:
-                dis = self.get_distance(target_row=self.row+possible_dir[i][0], target_col=self.col+possible_dir[i][1])
+                a1 = self.row+possible_dir[i][0]
+                b1 = self.col+possible_dir[i][1]
+                a = target[0]-self.row+possible_dir[i][0]
+                b = target[1]-self.col+possible_dir[i][1]
+
+
+                dis = math.sqrt((target[0]-self.row+possible_dir[i][0])**2+(target[1]-self.col+possible_dir[i][1])**2)
                 if min > dis:
                     min = dis
                     selected_dir=i
@@ -125,11 +131,6 @@ class Blinky:
         else:
             return self.direction
                     
-    def get_min_distance(self, target, valids):
-        possible_dir=[[-1,0], [0,+1], [+1,0], [0,-1]]
-        for v in valids:
-            if 
-        return math.sqrt((target_row-self.row)**2+(target_col-self.col)**2)
         
     def get_valid_dir(self, grid):
         valids=[]
@@ -331,9 +332,8 @@ blinky.draw_ghost(screen=screen)
 
 
 GHOSTEVENT = pygame.USEREVENT+1
+pygame.time.set_timer(event=GHOSTEVENT, millis=500)
 
-
-pygame.time.set_timer(event=GHOSTEVENT, millis=1000)
 run  = True
 while run:
 
