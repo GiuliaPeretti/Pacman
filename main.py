@@ -2,25 +2,32 @@ import pygame
 import random
 import time
 import ast
+import math
 from settings import *
 
 
 class Cell:
-    def __init__(self, row: int, col: int, wall: bool, food: bool) -> None:
+    def __init__(self, row: int, col: int, wall: bool, food: bool, intersection: bool) -> None:
         self.row=row
         self.col=col
         self.wall=wall
         self.food=food
+        self.intersection=intersection
         self.pacman=False
 
     def is_wall(self):
         return self.wall
+    
+    def is_intersection(self):
+        return self.intersection
 
     def draw_cell(self, screen):
         if self.wall:
             color=(0,0,255)
         elif self.pacman:
             color=(255,255,0)
+        elif self.intersection:
+            color=(0,255,0)
         else:
             color=(0,0,0)
 
@@ -35,9 +42,89 @@ class Cell:
     def set_pacman(self, b):
         self.pacman=b
 
-class 
+class Blinky:
+    def __init__(self):
+        self.row=17
+        self.col=12
+        #0 -> Scatter, 1 -> Chase, 2 -> Frightened
+        self.mode=0
+        #0 -> Up, 1 -> Right, 2 -> Down, 3 -> Left
+        self.direction=0
 
+    def draw_ghost(self):
+        color=(255,0,0)
+        line_width=1
+        x,y,w,h=self.col*cell_size, self.row*cell_size, cell_size,cell_size
+        pygame.draw.rect(screen, color, (x,y,w,h))
+        pygame.draw.line(screen, GRID_COLOR, (x,y),(x+cell_size,y), line_width)
+        pygame.draw.line(screen, GRID_COLOR, (x+cell_size,y),(x+cell_size,y+cell_size), line_width)
+        pygame.draw.line(screen, GRID_COLOR, (x,y+cell_size),(x+cell_size,y+cell_size), line_width)
+        pygame.draw.line(screen, GRID_COLOR, (x,y),(x,y+cell_size), line_width)
+
+    def move_ghost(self, grid):
+        self.chose_direction(grid)
+        match(dir):
+            case 0: 
+                #UP
+                if not grid[self.row-1][self.col].is_wall():
+                    self.clear_ghost()
+                    self.row=self.row-1
+                    self.draw_ghost()
+            case 1:
+                #RIGHT
+                if not grid[self.row][self.col+1].is_wall():
+                    self.clear_ghost()
+                    self.col=self.col+1
+                    self.draw_ghost()
+            case 2:
+                #DOWN
+                if not grid[self.row+1][self.col].is_wall():
+                    self.clear_ghost()
+                    self.row=self.row+1
+                    self.draw_ghost()
+            case 3:
+                #LEFT
+                if not grid[self.row][self.col-1].is_wall():
+                    self.clear_ghost()
+                    self.col=self.col-1
+                    self.draw_ghost()
+                
+        def chose_direction(grid):
+            if grid[self.row][self.col].is_intersection():
+                match(self.mode):
+                    case 0:
+                        #Scatter 0,25
+
+
+                        return
+                    case 1:
+                        #Chase
+                        return
+                    case 2:
+                        #Frightened
+                        return
+            self.move_ghost(self.direction)
+                    
+        def get_distance(target_row, target_col):
+            return math.sqrt((target_row-self.row)**2+(target_col-self.col)**2)
+        
+        def get_valid_dir(self, grid):
+            
+
+
+
+            
     
+    def clear_ghost(self):
+        color=(0,0,0)
+        line_width=1
+        x,y,w,h=self.col*cell_size, self.row*cell_size, cell_size,cell_size
+        pygame.draw.rect(screen, color, (x,y,w,h))
+        pygame.draw.line(screen, GRID_COLOR, (x,y),(x+cell_size,y), line_width)
+        pygame.draw.line(screen, GRID_COLOR, (x+cell_size,y),(x+cell_size,y+cell_size), line_width)
+        pygame.draw.line(screen, GRID_COLOR, (x,y+cell_size),(x+cell_size,y+cell_size), line_width)
+        pygame.draw.line(screen, GRID_COLOR, (x,y),(x,y+cell_size), line_width)
+
 
 def draw_background():
     screen.fill(BACKGROUND_COLOR)
@@ -96,15 +183,21 @@ def init_grid():
     f = open("not_walls.txt", "r")
     walkable = ast.literal_eval(f.read())
     f.close()
+    f = open("intersection.txt", "r")
+    intersections = ast.literal_eval(f.read())
+    f.close()
 
     for row in range (height_in_cell):
         temp=[]
         for col in range (width_in_cell):
             wall=True
             food=False
+            intersection=False
             if [row,col] in walkable:
                 wall=False
-            temp.append(Cell(row, col, wall, food))
+            if [row,col] in intersections:
+                intersection=True
+            temp.append(Cell(row, col, wall, food, intersection))
         grid.append(temp)
     grid[26][14].set_pacman(True)
                 

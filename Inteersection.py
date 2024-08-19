@@ -1,6 +1,7 @@
 import pygame
 import random
 import time
+import ast
 from settings import *
 
 
@@ -14,6 +15,12 @@ def draw_grid(cell_size):
     for i in range (0,SCREEN_HEIGHT+1,cell_size):
         pygame.draw.line(screen, PINK, (0,i),(SCREEN_WIDTH,i), line_width)
 
+    f = open("intersection.txt", "r")
+    walkable = ast.literal_eval(f.read())
+    f.close()
+
+    for i in walkable:
+        color_cell(i[0],i[1],GRAY)
 
 def color_cell(row,col,color):
     x,y,w,h=col*cell_size, row*cell_size, cell_size, cell_size
