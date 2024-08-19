@@ -26,15 +26,19 @@ def color_cell(row,col,color):
 def select_cell(x,y):
     row=y//cell_size
     col=x//cell_size
+    color_cell(row=row,col=col,color=(0,0,255))
+    selected_cell.append([row,col])
+
+def deselect_cell(x,y):
+    row=y//cell_size
+    col=x//cell_size
     if [row,col] in selected_cell:
         selected_cell.remove([row,col])
         color_cell(row=row,col=col,color=(0,0,0))
-    else:
-        color_cell(row=row,col=col,color=(0,0,255))
-        selected_cell["walls"].append([row,col])
+
 
 def write_on_file():
-    f = open("walls.json", "w")
+    f = open("not_walls.txt", "w")
     f.write(str(selected_cell))
     f.close()
 
@@ -49,7 +53,7 @@ font = pygame.font.SysFont('arial', 20)
 
 draw_background()
 draw_grid(cell_size)
-selected_cell={"walls":[]}
+selected_cell=[]
 
 
 
@@ -67,12 +71,19 @@ while run:
             x,y=pygame.mouse.get_pos()
             select_cell(x,y)
         if event.type == pygame.MOUSEBUTTONDOWN:
-            x,y=pygame.mouse.get_pos()
-            select_cell(x,y)
+            if event.button == 1:
+                x,y=pygame.mouse.get_pos()
+                select_cell(x,y)
+            elif event.button == 3:
+                x,y=pygame.mouse.get_pos()
+                deselect_cell(x,y)
         if event.type == MOUSEEVENT:
             if pygame.mouse.get_pressed()[0]:
                 x,y=pygame.mouse.get_pos()
                 select_cell(x,y)
+            elif pygame.mouse.get_pressed()[2]:
+                x,y=pygame.mouse.get_pos()
+                deselect_cell(x,y)                
 
 
 

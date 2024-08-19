@@ -1,6 +1,7 @@
 import pygame
 import random
 import time
+import ast
 from settings import *
 
 
@@ -40,7 +41,12 @@ def color_cell(row,col,color):
     pygame.draw.line(screen, GRID_COLOR, (x,y+cell_size),(x+cell_size,y+cell_size), 3)
     pygame.draw.line(screen, GRID_COLOR, (x,y),(x,y+cell_size), 3)
 
-
+def draw_not_walls():
+    f = open("not_walls.txt", "r")
+    not_walls = ast.literal_eval(f.read())
+    f.close()
+    for i in not_walls:
+        color_cell(i[0]-1,i[1]-1,color=(0,0,255))
 
 
     
@@ -99,7 +105,7 @@ font = pygame.font.SysFont('arial', 20)
 
 draw_background()
 draw_grid(cell_size)
-
+draw_not_walls()
 
 
 
