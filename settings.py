@@ -1,8 +1,10 @@
 import pygame
 
 cell_size=19
-SCREEN_HEIGHT=cell_size*36
-SCREEN_WIDTH=cell_size*28
+width_in_cell=28
+height_in_cell=36
+SCREEN_HEIGHT=cell_size*height_in_cell
+SCREEN_WIDTH=cell_size*width_in_cell
 
 WHITE=(255,255,255)
 GRAY=(150,150,150)

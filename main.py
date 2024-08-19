@@ -3,6 +3,7 @@ import random
 import time
 import ast
 from settings import *
+from Cell import *
 
 
 def draw_background():
@@ -43,57 +44,38 @@ def color_cell(row,col,color):
 
 def draw_not_walls():
     f = open("not_walls.txt", "r")
-    not_walls = ast.literal_eval(f.read())
+    walkable = ast.literal_eval(f.read())
     f.close()
-    for i in not_walls:
+    for i in walkable:
         color_cell(i[0]-1,i[1]-1,color=(0,0,255))
 
+def write_number():
+    font = pygame.font.SysFont('arial', 15)
+    for i in range (0,SCREEN_WIDTH+1,cell_size):
+        text=font.render(str(i//cell_size), True, GREEN)
+        screen.blit(text, (i,2))
+    for i in range (0,SCREEN_HEIGHT+1,cell_size):
+        text=font.render(str(i//cell_size), True, GREEN)
+        screen.blit(text, (2,i))
 
-    
-    
-def manage_buttons(n):
-    global game_status
-    global start_time
-    global ms_passed
-    global buttons
-    global best_score
-
-    match n:
-        case 0:
-            if game_status==3:
-                stop_the_game()
-            game_status=1
-            start_time = pygame.time.get_ticks() 
-            new_next_pieces()
-            gen_piece()
-        case 1:
-
-
-            if game_status==2:
-                game_status=1
-                start_time = pygame.time.get_ticks() 
-                buttons[1]['name']='Pause'
-                draw_buttons()
-
-            else:
-                game_status=2
-                ms_passed = ms_passed + pygame.time.get_ticks() - start_time
-                buttons[1]['name']='Restart'
-                draw_buttons()
-
-        case 2:
-            stop_the_game()
-
-        case 3:
-            f = open("best_score.txt", "w")
-            f.write('0')
-            f.close()
-            best_score=0
-            display_best_score()
-
-
-
-
+def init_grid():
+    f = open("not_walls.txt", "r")
+    walkable = ast.literal_eval(f.read())
+    f.close()
+    for row in range (len(height_in_cell)):
+        temp=[]
+        for col in range (len(width_in_cell)):
+            wall=True
+            food=False
+            if [row,col] in walkable:
+                wall=False
+            temp.append(Cell(row, col, wall, food))
+        grid.append(temp)
+                
+def draw_grid():
+    for row in range (len(height_in_cell)):
+        for col in range (len(width_in_cell)):
+            grid[row][col]
 
 
 pygame.init()
@@ -106,6 +88,8 @@ font = pygame.font.SysFont('arial', 20)
 draw_background()
 draw_grid(cell_size)
 draw_not_walls()
+write_number()
+grid=[]
 
 
 
@@ -124,15 +108,10 @@ while run:
             run = False
         if event.type == pygame.MOUSEBUTTONDOWN:
             x,y=pygame.mouse.get_pos()
-            # for i in range (len(buttons)):
-            #     if(x>=buttons[i]['coordinates'][0] and x<=buttons[i]['coordinates'][0]+buttons[i]['coordinates'][2] and y>=buttons[i]['coordinates'][1] and y<=buttons[i]['coordinates'][1]+buttons[i]['coordinates'][3]):
-            #         manage_buttons(i)
-            # else:
-            #     selected=-1
-            # draw_buttons()              
+            print(y//cell_size, x//cell_size)             
         if (event.type == pygame.KEYDOWN):
             for i in range(len(INPUTS)):
-                if (event.key==INPUTS[i] and game_status==1):
+                if (event.key==INPUTS[i]):
                     pass
 
     pygame.display.flip()

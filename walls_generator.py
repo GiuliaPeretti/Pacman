@@ -26,6 +26,8 @@ def color_cell(row,col,color):
 def select_cell(x,y):
     row=y//cell_size
     col=x//cell_size
+    if [row,col] in selected_cell:
+        return
     color_cell(row=row,col=col,color=(0,0,255))
     selected_cell.append([row,col])
 
