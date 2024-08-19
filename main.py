@@ -51,7 +51,7 @@ class Blinky:
         #0 -> Up, 1 -> Right, 2 -> Down, 3 -> Left
         self.direction=0
 
-    def draw_ghost(self):
+    def draw_ghost(self, screen):
         color=(255,0,0)
         line_width=1
         x,y,w,h=self.col*cell_size, self.row*cell_size, cell_size,cell_size
@@ -61,7 +61,7 @@ class Blinky:
         pygame.draw.line(screen, GRID_COLOR, (x,y+cell_size),(x+cell_size,y+cell_size), line_width)
         pygame.draw.line(screen, GRID_COLOR, (x,y),(x,y+cell_size), line_width)
 
-    def move_ghost(self, grid):
+    def move_ghost(self, grid, screen):
         self.chose_direction(grid)
         match(dir):
             case 0: 
@@ -69,33 +69,33 @@ class Blinky:
                 if not grid[self.row-1][self.col].is_wall():
                     self.clear_ghost()
                     self.row=self.row-1
-                    self.draw_ghost()
+                    self.draw_ghost(screen)
             case 1:
                 #RIGHT
                 if not grid[self.row][self.col+1].is_wall():
                     self.clear_ghost()
                     self.col=self.col+1
-                    self.draw_ghost()
+                    self.draw_ghost(screen)
             case 2:
                 #DOWN
                 if not grid[self.row+1][self.col].is_wall():
                     self.clear_ghost()
                     self.row=self.row+1
-                    self.draw_ghost()
+                    self.draw_ghost(screen)
             case 3:
                 #LEFT
                 if not grid[self.row][self.col-1].is_wall():
                     self.clear_ghost()
                     self.col=self.col-1
-                    self.draw_ghost()
+                    self.draw_ghost(screen)
                 
         def chose_direction(grid):
             if grid[self.row][self.col].is_intersection():
+                target=[]
                 match(self.mode):
                     case 0:
                         #Scatter 0,25
-
-
+                        target+[0,25]
                         return
                     case 1:
                         #Chase
@@ -103,13 +103,31 @@ class Blinky:
                     case 2:
                         #Frightened
                         return
+                min=1000
+                valids=self.get_valid_dir(grid)
+                possible_dir=[[-1,0], [0,+1], [+1,0], [0,-1]]
+                selected_dir=-1
+                for i in valids:
+                    dis = get_distance(target_row=self.row+possible_dir[i][0], target_col=self.col+possible_dir[i][1])
+                    if min > dis:
+                        min = dis
+                        selected_dir=i
+            self.direction=selected_dir
             self.move_ghost(self.direction)
                     
         def get_distance(target_row, target_col):
             return math.sqrt((target_row-self.row)**2+(target_col-self.col)**2)
         
         def get_valid_dir(self, grid):
-            
+            valids=[]
+            possible_dir=[[-1,0], [0,+1], [+1,0], [0,-1]]
+            for i in range (len(possible_dir)):
+                if not grid[self.row+possible_dir[i][0]][self.col+possible_dir[i][1]].is_wall():
+                    valids.append(i)
+            if (self.direction in valids):
+                valids.remove(self.direction)
+            return valids
+
 
 
 
@@ -294,6 +312,7 @@ font = pygame.font.SysFont('arial', 20)
 
 grid=[]
 pacman_pos=[26,14]
+blinky = Blinky()
 init_grid()
 draw_background()
 draw_grid(cell_size)
@@ -302,13 +321,10 @@ write_number()
 display_img()
 
 
-MOVEEVENT = pygame.USEREVENT+1
-TIMEEVENT = pygame.USEREVENT+2
-KEYEVENT = pygame.USEREVENT+3
+GHOSTEVENT = pygame.USEREVENT+1
 
-pygame.time.set_timer(event=MOVEEVENT, millis=500)
-pygame.time.set_timer(event=TIMEEVENT, millis=100)
-# pygame.time.set_timer(event=KEYEVENT, millis=500)
+
+pygame.time.set_timer(event=GHOSTEVENT, millis=1000)
 run  = True
 while run:
 
@@ -323,6 +339,8 @@ while run:
                 if (event.key==INPUTS[i]):
                     handle_movements(i)
                     break
+        if (event.type == GHOSTEVENT):
+            blinky.move_ghost(grid, screen)
 
     pygame.display.flip()
     clock.tick(30)
