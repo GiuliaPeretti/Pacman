@@ -3,8 +3,33 @@ import random
 import time
 import ast
 from settings import *
-from Cell import *
 
+
+class Cell:
+    def __init__(self, row: int, col: int, wall: bool, food: bool) -> None:
+        self.row=row
+        self.col=col
+        self.wall=wall
+        self.food=food
+
+    def is_wall(self):
+        return self.wall
+
+    def draw_cell(self, screen):
+        if self.wall:
+            color=(0,0,255)
+        else:
+            color=(0,0,0)
+
+        line_width=1
+        x,y,w,h=self.col*cell_size, self.row*cell_size, cell_size,cell_size
+        pygame.draw.rect(screen, color, (x,y,w,h))
+        pygame.draw.line(screen, GRID_COLOR, (x,y),(x+cell_size,y), line_width)
+        pygame.draw.line(screen, GRID_COLOR, (x+cell_size,y),(x+cell_size,y+cell_size), line_width)
+        pygame.draw.line(screen, GRID_COLOR, (x,y+cell_size),(x+cell_size,y+cell_size), line_width)
+        pygame.draw.line(screen, GRID_COLOR, (x,y),(x,y+cell_size), line_width)
+
+    
 
 def draw_background():
     screen.fill(BACKGROUND_COLOR)
@@ -35,19 +60,20 @@ def draw_wall(row,col,n,wall_color=(00,00,00)):
         pygame.draw.line(screen, RED, ( (row*cell_size)+cell_size+20 , (col*cell_size)+20 ) , ((row*cell_size)+cell_size+20 , (col*cell_size)+cell_size+20), line_width)
 
 def color_cell(row,col,color):
-    x,y,w,h=col*cell_size+20, row*cell_size+20, cell_size,cell_size
+    line_width=1
+    x,y,w,h=col*cell_size, row*cell_size, cell_size,cell_size
     pygame.draw.rect(screen, color, (x,y,w,h))
-    pygame.draw.line(screen, GRID_COLOR, (x,y),(x+cell_size,y), 3)
-    pygame.draw.line(screen, GRID_COLOR, (x+cell_size,y),(x+cell_size,y+cell_size), 3)
-    pygame.draw.line(screen, GRID_COLOR, (x,y+cell_size),(x+cell_size,y+cell_size), 3)
-    pygame.draw.line(screen, GRID_COLOR, (x,y),(x,y+cell_size), 3)
+    pygame.draw.line(screen, GRID_COLOR, (x,y),(x+cell_size,y), line_width)
+    pygame.draw.line(screen, GRID_COLOR, (x+cell_size,y),(x+cell_size,y+cell_size), line_width)
+    pygame.draw.line(screen, GRID_COLOR, (x,y+cell_size),(x+cell_size,y+cell_size), line_width)
+    pygame.draw.line(screen, GRID_COLOR, (x,y),(x,y+cell_size), line_width)
 
 def draw_not_walls():
     f = open("not_walls.txt", "r")
     walkable = ast.literal_eval(f.read())
     f.close()
     for i in walkable:
-        color_cell(i[0]-1,i[1]-1,color=(0,0,255))
+        color_cell(i[0],i[1],color=(0,0,255))
 
 def write_number():
     font = pygame.font.SysFont('arial', 15)
@@ -62,9 +88,9 @@ def init_grid():
     f = open("not_walls.txt", "r")
     walkable = ast.literal_eval(f.read())
     f.close()
-    for row in range (len(height_in_cell)):
+    for row in range (height_in_cell):
         temp=[]
-        for col in range (len(width_in_cell)):
+        for col in range (width_in_cell):
             wall=True
             food=False
             if [row,col] in walkable:
@@ -72,10 +98,32 @@ def init_grid():
             temp.append(Cell(row, col, wall, food))
         grid.append(temp)
                 
-def draw_grid():
-    for row in range (len(height_in_cell)):
-        for col in range (len(width_in_cell)):
-            grid[row][col]
+def draw_cells():
+    global grid
+    for row in range (len(grid)):
+        for col in range (len(grid[0])):
+            grid[row][col].draw_cell(screen)
+
+def display_img():
+    images=[
+        "GamesImages\\bottom_to_right.png",
+        "GamesImages\\bottom_to_left.png",
+        "GamesImages\\top_to_right.png",
+        "GamesImages\\top_to_left.png",
+        "GamesImages\\vertical_right.png",
+        "GamesImages\\vertical_left.png",
+        "GamesImages\\horizontal_top.png",
+        "GamesImages\\horizontal_bottom.png",
+        "GamesImages\\vertical_right2.png",
+        "GamesImages\\vertical_left2.png",
+        "GamesImages\\horizontal_top2.png",
+        "GamesImages\\horizontal_bottom2.png",
+        "GamesImages\\bottom_to_right2.png",
+        "GamesImages\\bottom_to_left2.png",
+    ]
+    for i in range (len(images)):
+        imp = pygame.image.load(images[i]).convert()
+        screen.blit(imp, (i*cell_size,0))
 
 
 pygame.init()
@@ -85,12 +133,14 @@ pygame.display.set_caption('Tetris♥')
 font = pygame.font.SysFont('arial', 20)
 
 
+
+grid=[]
+init_grid()
 draw_background()
 draw_grid(cell_size)
-draw_not_walls()
+draw_cells()
 write_number()
-grid=[]
-
+display_img()
 
 
 MOVEEVENT = pygame.USEREVENT+1
