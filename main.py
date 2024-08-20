@@ -508,9 +508,24 @@ def display_img():
     ]
     for i in range (len(images)):
         imp = pygame.image.load(images[i]).convert()
-        screen.blit(imp, (i*cell_size,0))
+        screen.blit(imp, (i*300,0))
 
-    
+def draw_ghost():
+    ghosts=[
+        "Ghosts\Blinky_left.png",
+        "Ghosts\Blinky_right.png",
+        "Ghosts\Blinky_up.png",
+        "Ghosts\Blinky_down.png",
+        "Ghosts\Pinky_down.png",
+        "Ghosts\Inky_down.png",
+        "Ghosts\Clyde_down.png",
+    ]
+    count=0
+    for i in range (0,len(ghosts)):
+        count+=2
+        imp = pygame.image.load(ghosts[i]).convert()
+        screen.blit(imp, (count*cell_size-10,16*cell_size-10))
+
             
 
         
@@ -537,10 +552,11 @@ draw_cells()
 write_number()
 display_img()
 blinky.draw_ghost(screen=screen)
+draw_ghost()
 
 
 GHOSTEVENT = pygame.USEREVENT+1
-pygame.time.set_timer(event=GHOSTEVENT, millis=500)
+pygame.time.set_timer(event=GHOSTEVENT, millis=5000)
 
 run  = True
 while run:
@@ -558,7 +574,7 @@ while run:
                     break
         if (event.type == GHOSTEVENT):
             blinky.move_ghost(grid, screen)
-            pinky.move_ghost(grid, screen)
+            # pinky.move_ghost(grid, screen)
 
     pygame.display.flip()
     clock.tick(30)
