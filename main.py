@@ -8,6 +8,113 @@ from settings import *
 #TODO: A ghost in Frightened mode also turns dark blue, moves much more slowly and can be eaten by Pac-Man
 #TODO: implementa livelli
 #TODO: ricontrolla meglio lo sfondo che secondo me hai sbagliato qualcosa
+#TODO: — ghosts can not choose to turn upwards from these tiles.    
+
+class Ghost:
+    def __init__(self):
+        #0 -> Scatter, 1 -> Chase, 2 -> Frightened
+        self.mode=1
+        #0 -> Up, 1 -> Right, 2 -> Down, 3 -> Left
+        self.direction=0
+        self.starting=0
+        self.target=[None,None]
+
+    def move_ghost(self, grid, screen):
+        dir = self.chose_direction(grid)
+        self.direction=dir
+        match(dir):
+            case 0: 
+                #UP
+                # if not grid[self.row-1][self.col].is_wall():
+                self.clear_ghost()
+                self.row=self.row-1
+                self.display_ghost(screen)
+                    
+            case 1:
+                #RIGHT
+                # if not grid[self.row][self.col+1].is_wall():
+                self.clear_ghost()
+                self.col=self.col+1
+                self.display_ghost(screen)
+            case 2:
+                #DOWN
+                # if not grid[self.row+1][self.col].is_wall():
+                self.clear_ghost()
+                self.row=self.row+1
+                self.display_ghost(screen)
+            case 3:
+                #LEFT
+                # if not grid[self.row][self.col-1].is_wall():
+                self.clear_ghost()
+                self.col=self.col-1
+                self.display_ghost(screen)
+
+    def chose_direction(self, grid):
+        if self.starting<len(self.start_moves):
+            self.starting+=1
+            return self.start_moves[self.starting-1]
+
+        if self.mode==2:
+            valids=self.get_valid_dir(grid)
+            return random.choice(valids)
+
+        
+        # if grid[self.row][self.col].is_intersection() or self.starting==4:
+        self.starting=len(self.start_moves)
+        self.set_target()
+
+        min=1000
+        valids=self.get_valid_dir(grid)
+        possible_dir=[[-1,0], [0,+1], [+1,0], [0,-1]]
+        selected_dir=-1
+        for i in valids:
+            point_x= self.col+possible_dir[i][1]
+            point_y = self.row+possible_dir[i][0]
+            target_x=self.target[1]
+            target_y=self.target[0]
+
+            dis = math.sqrt(((target_x-point_x)**2)+((target_y-point_y)**2))
+            # dis = math.sqrt(((target[0]-self.row+possible_dir[i][0])**2)+((target[1]-self.col+possible_dir[i][1])**2))
+            
+            if min > dis:
+                min = dis
+                selected_dir=i
+        return selected_dir                
+        
+    def get_valid_dir(self, grid):
+        valids=[]
+        possible_dir=[[-1,0], [0,+1], [+1,0], [0,-1]]
+        print(self.row, self.col)
+        for i in range (len(possible_dir)):
+            row = self.row+possible_dir[i][0]
+            col = self.col+possible_dir[i][1]
+            if not grid[self.row+possible_dir[i][0]][self.col+possible_dir[i][1]].is_wall():
+                valids.append(i)
+        match (self.direction):
+            case 0:
+                if (2 in valids):
+                    valids.remove(2)
+            case 1:
+                if (3 in valids):
+                    valids.remove(3)
+            case 2:
+                if (0 in valids):
+                    valids.remove(0)
+            case 3:
+                if (1 in valids):
+                    valids.remove(1)
+        return valids
+
+    def clear_ghost(self):
+        color=(0,0,0)
+        line_width=1
+        x,y,w,h=self.col*cell_size-8, self.row*cell_size-8, 42,42
+        pygame.draw.rect(screen, BLACK, (x,y,w,h))
+        pygame.draw.line(screen, BLACK, (x,y),(x+cell_size,y), line_width)
+        pygame.draw.line(screen, BLACK, (x+cell_size,y),(x+cell_size,y+cell_size), line_width)
+        pygame.draw.line(screen, BLACK, (x,y+cell_size),(x+cell_size,y+cell_size), line_width)
+        pygame.draw.line(screen, BLACK, (x,y),(x,y+cell_size), line_width)
+
 
 
 
@@ -130,15 +237,11 @@ class Pacman:
                     grid[self.row][self.col-1].draw_cell(screen)
                     self.col=self.col-1
 
-class Blinky:
+class Blinky(Ghost):
     def __init__(self):
+        super().__init__()
         self.row=17
         self.col=12
-        #0 -> Scatter, 1 -> Chase, 2 -> Frightened
-        self.mode=0
-        #0 -> Up, 1 -> Right, 2 -> Down, 3 -> Left
-        self.direction=0
-        self.starting=0
         self.start_moves=[0,1,0,0,3]
 
     def display_ghost(self, screen):
@@ -165,138 +268,30 @@ class Blinky:
         screen.blit(img, (self.col*cell_size-8,self.row*cell_size-8))
 
 
-
-
-    def move_ghost(self, grid, screen):
-        dir = self.chose_direction(grid)
-        self.direction=dir
-        match(dir):
-            case 0: 
-                #UP
-                # if not grid[self.row-1][self.col].is_wall():
-                self.clear_ghost()
-                self.row=self.row-1
-                self.display_ghost(screen)
-                    
-            case 1:
-                #RIGHT
-                # if not grid[self.row][self.col+1].is_wall():
-                self.clear_ghost()
-                self.col=self.col+1
-                self.display_ghost(screen)
-            case 2:
-                #DOWN
-                # if not grid[self.row+1][self.col].is_wall():
-                self.clear_ghost()
-                self.row=self.row+1
-                self.display_ghost(screen)
-            case 3:
-                #LEFT
-                # if not grid[self.row][self.col-1].is_wall():
-                self.clear_ghost()
-                self.col=self.col-1
-                self.display_ghost(screen)
-
     def start_pinky(self):
         global pinky
         
 
-    def chose_direction(self, grid):
-        if self.starting<=len(self.start_moves):
-            if self.starting==len(self.start_moves):
-                self.start_pinky()
-            else:
-                self.starting+=1
-                return self.start_moves[self.starting-1]
-
-        if self.mode==2:
-            valids=self.get_valid_dir(grid)
-            return random.choice(valids)
-
-        
-        # if grid[self.row][self.col].is_intersection() or self.starting==4:
-        self.starting=len(self.start_moves)
-        target=self.get_target()
-
-        min=1000
-        valids=self.get_valid_dir(grid)
-        possible_dir=[[-1,0], [0,+1], [+1,0], [0,-1]]
-        selected_dir=-1
-        for i in valids:
-            point_x= self.col+possible_dir[i][1]
-            point_y = self.row+possible_dir[i][0]
-            target_x=target[1]
-            target_y=target[0]
-
-            dis = math.sqrt(((target_x-point_x)**2)+((target_y-point_y)**2))
-            # dis = math.sqrt(((target[0]-self.row+possible_dir[i][0])**2)+((target[1]-self.col+possible_dir[i][1])**2))
-            
-            if min > dis:
-                min = dis
-                selected_dir=i
-        return selected_dir
-
-                    
-        
-    def get_valid_dir(self, grid):
-        valids=[]
-        possible_dir=[[-1,0], [0,+1], [+1,0], [0,-1]]
-        print(self.row, self.col)
-        if self.row==14 and self.col==15:
-            print("Ciao")
-        for i in range (len(possible_dir)):
-            row = self.row+possible_dir[i][0]
-            col = self.col+possible_dir[i][1]
-            if not grid[self.row+possible_dir[i][0]][self.col+possible_dir[i][1]].is_wall():
-                valids.append(i)
-        match (self.direction):
-            case 0:
-                if (2 in valids):
-                    valids.remove(2)
-            case 1:
-                if (3 in valids):
-                    valids.remove(3)
-            case 2:
-                if (0 in valids):
-                    valids.remove(0)
-            case 3:
-                if (1 in valids):
-                    valids.remove(1)
-        return valids
-
-    def clear_ghost(self):
-        color=(0,0,0)
-        line_width=1
-        x,y,w,h=self.col*cell_size-8, self.row*cell_size-8, 42,42
-        pygame.draw.rect(screen, BLACK, (x,y,w,h))
-        pygame.draw.line(screen, BLACK, (x,y),(x+cell_size,y), line_width)
-        pygame.draw.line(screen, BLACK, (x+cell_size,y),(x+cell_size,y+cell_size), line_width)
-        pygame.draw.line(screen, BLACK, (x,y+cell_size),(x+cell_size,y+cell_size), line_width)
-        pygame.draw.line(screen, BLACK, (x,y),(x,y+cell_size), line_width)
-
-    def get_target(self):
+    def set_target(self):
         global pacman
         match(self.mode):
             case 0:
                 #Scatter 0,25
-                target=[0,25]
+                self.target=[0,25]
             case 1:
                 #Chase
-                target=pacman.get_position()
+                #TODO: quando cambi da qualcosa a chase metti target nella posizione in cui e in quel momento
+                if self.target==[self.row,self.col] or self.target==[None,None]:
+                    self.arget=pacman.get_position()
             case 2:
                 #Frightened
                 return
-        return target
 
-class Pinky:
+class Pinky(Ghost):
     def __init__(self):
+        super().__init__()
         self.row=17
         self.col=13
-        #0 -> Scatter, 1 -> Chase, 2 -> Frightened
-        self.mode=0
-        #0 -> Up, 1 -> Right, 2 -> Down, 3 -> Left
-        self.direction=0
-        self.starting=0
         self.start_moves=[0,0,0,3]
 
     def display_ghost(self, screen):
@@ -313,121 +308,38 @@ class Pinky:
         img = pygame.image.load(img).convert()
         screen.blit(img, (self.col*cell_size-8,self.row*cell_size-8))
 
-
-
-    def move_ghost(self, grid, screen):
-        dir = self.chose_direction(grid)
-        self.direction=dir
-        match(dir):
-            case 0: 
-                #UP
-                # if not grid[self.row-1][self.col].is_wall():
-                self.clear_ghost()
-                self.row=self.row-1
-                self.display_ghost(screen)
-                    
-            case 1:
-                #RIGHT
-                # if not grid[self.row][self.col+1].is_wall():
-                self.clear_ghost()
-                self.col=self.col+1
-                self.display_ghost(screen)
-            case 2:
-                #DOWN
-                # if not grid[self.row+1][self.col].is_wall():
-                self.clear_ghost()
-                self.row=self.row+1
-                self.display_ghost(screen)
-            case 3:
-                #LEFT
-                # if not grid[self.row][self.col-1].is_wall():
-                self.clear_ghost()
-                self.col=self.col-1
-                self.display_ghost(screen)
-                
-    def chose_direction(self, grid):
-        if self.starting<len(self.start_moves):
-            self.starting+=1
-            return self.start_moves[self.starting-1]
-
-        if self.mode==2:
-            valids=self.get_valid_dir(grid)
-            return random.choice(valids)
-
-        
-        # if grid[self.row][self.col].is_intersection() or self.starting==4:
-        self.starting=len(self.start_moves)
-        target=self.get_target()
-
-        min=1000
-        valids=self.get_valid_dir(grid)
-        possible_dir=[[-1,0], [0,+1], [+1,0], [0,-1]]
-        selected_dir=-1
-        for i in valids:
-            point_x= self.col+possible_dir[i][1]
-            point_y = self.row+possible_dir[i][0]
-            target_x=target[1]
-            target_y=target[0]
-
-            dis = math.sqrt(((target_x-point_x)**2)+((target_y-point_y)**2))
-            # dis = math.sqrt(((target[0]-self.row+possible_dir[i][0])**2)+((target[1]-self.col+possible_dir[i][1])**2))
-            
-            if min > dis:
-                min = dis
-                selected_dir=i
-        return selected_dir
-
-                    
-        
-    def get_valid_dir(self, grid):
-        valids=[]
-        possible_dir=[[-1,0], [0,+1], [+1,0], [0,-1]]
-        print(self.row, self.col)
-        if self.row==14 and self.col==15:
-            print("Ciao")
-        for i in range (len(possible_dir)):
-            row = self.row+possible_dir[i][0]
-            col = self.col+possible_dir[i][1]
-            if not grid[self.row+possible_dir[i][0]][self.col+possible_dir[i][1]].is_wall():
-                valids.append(i)
-        match (self.direction):
-            case 0:
-                if (2 in valids):
-                    valids.remove(2)
-            case 1:
-                if (3 in valids):
-                    valids.remove(3)
-            case 2:
-                if (0 in valids):
-                    valids.remove(0)
-            case 3:
-                if (1 in valids):
-                    valids.remove(1)
-        return valids
-
-    def clear_ghost(self):
-        color=(0,0,0)
-        line_width=1
-        x,y,w,h=self.col*cell_size-8, self.row*cell_size-8, 42,42
-        pygame.draw.rect(screen, color, (x,y,w,h))
-        pygame.draw.line(screen, BLACK, (x,y),(x+cell_size,y), line_width)
-        pygame.draw.line(screen, BLACK, (x+cell_size,y),(x+cell_size,y+cell_size), line_width)
-        pygame.draw.line(screen, BLACK, (x,y+cell_size),(x+cell_size,y+cell_size), line_width)
-        pygame.draw.line(screen, BLACK, (x,y),(x,y+cell_size), line_width)
-
-    def get_target(self):
+    def set_target(self):
         global pacman
         match(self.mode):
             case 0:
                 #Scatter 0,25
-                target=[0,3]
+                self.target=[0,3]
             case 1:
                 #Chase
-                target=pacman.get_position()
+                if self.target==[self.row,self.col] or self.target==[None,None]:
+                    pacman_pos=pacman.get_position()
+                    pacman_dir=pacman.get_direction()
+                    match(pacman_dir):
+                        case 0:
+                            self.target=[pacman_pos[0]-4,pacman_pos[1]]
+                            while grid[self.target[0]][self.target[1]].is_wall():
+                                self.target[0]+=1
+                        case 1:
+                            self.target=[pacman_pos[0],pacman_pos[1]+4]
+                            while grid[self.target[0]][self.target[1]].is_wall():
+                                self.target[1]-=1
+                        case 2:
+                            self.target=[pacman_pos[0]+4, pacman_pos[1]]
+                            while grid[self.target[0]][self.target[1]].is_wall():
+                                self.target[0]-=1                            
+                        case 3:
+                            self.target=[pacman_pos[0], pacman_pos[1]-4]
+                            while grid[self.target[0]][self.target[1]].is_wall():
+                                self.target[1]+=1
+
             case 2:
                 #Frightened
                 return
-        return target
 
 
 def draw_background():
@@ -614,7 +526,7 @@ while run:
                     break
         if (event.type == GHOSTEVENT):
             pinky.move_ghost(grid, screen)
-            # pinky.move_ghost(grid, screen)
+            blinky.move_ghost(grid, screen)
 
     pygame.display.flip()
     clock.tick(30)
