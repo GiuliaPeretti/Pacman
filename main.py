@@ -7,6 +7,8 @@ from settings import *
 
 #TODO: A ghost in Frightened mode also turns dark blue, moves much more slowly and can be eaten by Pac-Man
 #TODO: implementa livelli
+#TODO: ricontrolla meglio lo sfondo che secondo me hai sbagliato qualcosa
+
 
 
 class Cell:
@@ -139,15 +141,31 @@ class Blinky:
         self.starting=0
         self.start_moves=[0,1,0,0,3]
 
-    def draw_ghost(self, screen):
-        color=(255,0,0)
-        line_width=1
-        x,y,w,h=self.col*cell_size, self.row*cell_size, cell_size,cell_size
-        pygame.draw.rect(screen, color, (x,y,w,h))
-        pygame.draw.line(screen, GRID_COLOR, (x,y),(x+cell_size,y), line_width)
-        pygame.draw.line(screen, GRID_COLOR, (x+cell_size,y),(x+cell_size,y+cell_size), line_width)
-        pygame.draw.line(screen, GRID_COLOR, (x,y+cell_size),(x+cell_size,y+cell_size), line_width)
-        pygame.draw.line(screen, GRID_COLOR, (x,y),(x,y+cell_size), line_width)
+    def display_ghost(self, screen):
+        # color=(255,0,0)
+        # line_width=1
+        # x,y,w,h=self.col*cell_size, self.row*cell_size, cell_size,cell_size
+        # pygame.draw.rect(screen, color, (x,y,w,h))
+        # pygame.drawdisplay_ghost.line(screen, GRID_COLOR, (x,y),(x+cell_size,y), line_width)
+        # pygame.draw.line(screen, GRID_COLOR, (x+cell_size,y),(x+cell_size,y+cell_size), line_width)
+        # pygame.draw.line(screen, GRID_COLOR, (x,y+cell_size),(x+cell_size,y+cell_size), line_width)
+        # pygame.draw.line(screen, GRID_COLOR, (x,y),(x,y+cell_size), line_width)
+        
+        match(self.direction):
+            case 0:
+                img="Ghosts\Blinky_up.png"
+            case 1:
+                img="Ghosts\Blinky_right.png"
+            case 2:
+                img="Ghosts\Blinky_down.png"
+            case 3:
+                img="Ghosts\Blinky_left.png"                
+
+        img = pygame.image.load(img).convert()
+        screen.blit(img, (self.col*cell_size-8,self.row*cell_size-8))
+
+
+
 
     def move_ghost(self, grid, screen):
         dir = self.chose_direction(grid)
@@ -158,26 +176,26 @@ class Blinky:
                 # if not grid[self.row-1][self.col].is_wall():
                 self.clear_ghost()
                 self.row=self.row-1
-                self.draw_ghost(screen)
+                self.display_ghost(screen)
                     
             case 1:
                 #RIGHT
                 # if not grid[self.row][self.col+1].is_wall():
                 self.clear_ghost()
                 self.col=self.col+1
-                self.draw_ghost(screen)
+                self.display_ghost(screen)
             case 2:
                 #DOWN
                 # if not grid[self.row+1][self.col].is_wall():
                 self.clear_ghost()
                 self.row=self.row+1
-                self.draw_ghost(screen)
+                self.display_ghost(screen)
             case 3:
                 #LEFT
                 # if not grid[self.row][self.col-1].is_wall():
                 self.clear_ghost()
                 self.col=self.col-1
-                self.draw_ghost(screen)
+                self.display_ghost(screen)
 
     def start_pinky(self):
         global pinky
@@ -186,9 +204,10 @@ class Blinky:
     def chose_direction(self, grid):
         if self.starting<=len(self.start_moves):
             if self.starting==len(self.start_moves):
-                self.start_pinky()                
-            self.starting+=1
-            return self.start_moves[self.starting-1]
+                self.start_pinky()
+            else:
+                self.starting+=1
+                return self.start_moves[self.starting-1]
 
         if self.mode==2:
             valids=self.get_valid_dir(grid)
@@ -248,8 +267,8 @@ class Blinky:
     def clear_ghost(self):
         color=(0,0,0)
         line_width=1
-        x,y,w,h=self.col*cell_size, self.row*cell_size, cell_size,cell_size
-        pygame.draw.rect(screen, color, (x,y,w,h))
+        x,y,w,h=self.col*cell_size-8, self.row*cell_size-8, 42,42
+        pygame.draw.rect(screen, BLACK, (x,y,w,h))
         pygame.draw.line(screen, BLACK, (x,y),(x+cell_size,y), line_width)
         pygame.draw.line(screen, BLACK, (x+cell_size,y),(x+cell_size,y+cell_size), line_width)
         pygame.draw.line(screen, BLACK, (x,y+cell_size),(x+cell_size,y+cell_size), line_width)
@@ -280,15 +299,21 @@ class Pinky:
         self.starting=0
         self.start_moves=[0,0,0,3]
 
-    def draw_ghost(self, screen):
-        color=(255,150,255)
-        line_width=1
-        x,y,w,h=self.col*cell_size, self.row*cell_size, cell_size,cell_size
-        pygame.draw.rect(screen, color, (x,y,w,h))
-        pygame.draw.line(screen, GRID_COLOR, (x,y),(x+cell_size,y), line_width)
-        pygame.draw.line(screen, GRID_COLOR, (x+cell_size,y),(x+cell_size,y+cell_size), line_width)
-        pygame.draw.line(screen, GRID_COLOR, (x,y+cell_size),(x+cell_size,y+cell_size), line_width)
-        pygame.draw.line(screen, GRID_COLOR, (x,y),(x,y+cell_size), line_width)
+    def display_ghost(self, screen):
+        match(self.direction):
+            case 0:
+                img="Ghosts\Pinky_up.png"
+            case 1:
+                img="Ghosts\Pinky_right.png"
+            case 2:
+                img="Ghosts\Pinky_down.png"
+            case 3:
+                img="Ghosts\Pinky_left.png"                
+
+        img = pygame.image.load(img).convert()
+        screen.blit(img, (self.col*cell_size-8,self.row*cell_size-8))
+
+
 
     def move_ghost(self, grid, screen):
         dir = self.chose_direction(grid)
@@ -299,26 +324,26 @@ class Pinky:
                 # if not grid[self.row-1][self.col].is_wall():
                 self.clear_ghost()
                 self.row=self.row-1
-                self.draw_ghost(screen)
+                self.display_ghost(screen)
                     
             case 1:
                 #RIGHT
                 # if not grid[self.row][self.col+1].is_wall():
                 self.clear_ghost()
                 self.col=self.col+1
-                self.draw_ghost(screen)
+                self.display_ghost(screen)
             case 2:
                 #DOWN
                 # if not grid[self.row+1][self.col].is_wall():
                 self.clear_ghost()
                 self.row=self.row+1
-                self.draw_ghost(screen)
+                self.display_ghost(screen)
             case 3:
                 #LEFT
                 # if not grid[self.row][self.col-1].is_wall():
                 self.clear_ghost()
                 self.col=self.col-1
-                self.draw_ghost(screen)
+                self.display_ghost(screen)
                 
     def chose_direction(self, grid):
         if self.starting<len(self.start_moves):
@@ -383,7 +408,7 @@ class Pinky:
     def clear_ghost(self):
         color=(0,0,0)
         line_width=1
-        x,y,w,h=self.col*cell_size, self.row*cell_size, cell_size,cell_size
+        x,y,w,h=self.col*cell_size-8, self.row*cell_size-8, 42,42
         pygame.draw.rect(screen, color, (x,y,w,h))
         pygame.draw.line(screen, BLACK, (x,y),(x+cell_size,y), line_width)
         pygame.draw.line(screen, BLACK, (x+cell_size,y),(x+cell_size,y+cell_size), line_width)
@@ -512,19 +537,35 @@ def display_img():
 
 def draw_ghost():
     ghosts=[
-        "Ghosts\Blinky_left.png",
-        "Ghosts\Blinky_right.png",
         "Ghosts\Blinky_up.png",
         "Ghosts\Blinky_down.png",
+        "Ghosts\Blinky_right.png",
+        "Ghosts\Blinky_left.png",
+
+        "Ghosts\Pinky_up.png",
         "Ghosts\Pinky_down.png",
+        "Ghosts\Pinky_right.png",
+        "Ghosts\Pinky_left.png",
+
+        "Ghosts\Inky_up.png",
         "Ghosts\Inky_down.png",
+        "Ghosts\Inky_right.png",
+        "Ghosts\Inky_left.png",
+
+        "Ghosts\Clyde_up.png",
         "Ghosts\Clyde_down.png",
+        "Ghosts\Clyde_right.png",
+        "Ghosts\Clyde_left.png",        
     ]
     count=0
+    count1=16
     for i in range (0,len(ghosts)):
         count+=2
+        if (i==8):
+            count1+=2
+            count=2
         imp = pygame.image.load(ghosts[i]).convert()
-        screen.blit(imp, (count*cell_size-10,16*cell_size-10))
+        screen.blit(imp, (count*cell_size-10,count1*cell_size-10))
 
             
 
@@ -551,12 +592,11 @@ draw_grid(cell_size)
 draw_cells()
 write_number()
 display_img()
-blinky.draw_ghost(screen=screen)
-draw_ghost()
-
+blinky.display_ghost(screen=screen)
+pinky.display_ghost(screen=screen)
 
 GHOSTEVENT = pygame.USEREVENT+1
-pygame.time.set_timer(event=GHOSTEVENT, millis=5000)
+pygame.time.set_timer(event=GHOSTEVENT, millis=500)
 
 run  = True
 while run:
@@ -573,7 +613,7 @@ while run:
                     pacman.move_pacman(i)
                     break
         if (event.type == GHOSTEVENT):
-            blinky.move_ghost(grid, screen)
+            pinky.move_ghost(grid, screen)
             # pinky.move_ghost(grid, screen)
 
     pygame.display.flip()
