@@ -1,6 +1,6 @@
 import pygame
 
-cell_size=15
+cell_size=24
 width_in_cell=28
 height_in_cell=36
 SCREEN_HEIGHT=cell_size*height_in_cell

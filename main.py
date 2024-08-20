@@ -117,13 +117,14 @@ class Blinky:
             possible_dir=[[-1,0], [0,+1], [+1,0], [0,-1]]
             selected_dir=-1
             for i in valids:
-                a1 = self.row+possible_dir[i][0]
-                b1 = self.col+possible_dir[i][1]
-                a = target[0]-self.row+possible_dir[i][0]
-                b = target[1]-self.col+possible_dir[i][1]
+                point_x= self.col+possible_dir[i][1]
+                point_y = self.row+possible_dir[i][0]
+                target_x=target[1]
+                target_y=target[0]
 
-
-                dis = math.sqrt((target[0]-self.row+possible_dir[i][0])**2+(target[1]-self.col+possible_dir[i][1])**2)
+                dis = math.sqrt(((target_x-point_x)**2)+((target_y-point_y)**2))
+                # dis = math.sqrt(((target[0]-self.row+possible_dir[i][0])**2)+((target[1]-self.col+possible_dir[i][1])**2))
+               
                 if min > dis:
                     min = dis
                     selected_dir=i
@@ -135,6 +136,9 @@ class Blinky:
     def get_valid_dir(self, grid):
         valids=[]
         possible_dir=[[-1,0], [0,+1], [+1,0], [0,-1]]
+        print(self.row, self.col)
+        if self.row==11 and self.col==15:
+            print("Ciao")
         for i in range (len(possible_dir)):
             if not grid[self.row+possible_dir[i][0]][self.col+possible_dir[i][1]].is_wall():
                 valids.append(i)
@@ -147,10 +151,10 @@ class Blinky:
         line_width=1
         x,y,w,h=self.col*cell_size, self.row*cell_size, cell_size,cell_size
         pygame.draw.rect(screen, color, (x,y,w,h))
-        pygame.draw.line(screen, GRID_COLOR, (x,y),(x+cell_size,y), line_width)
-        pygame.draw.line(screen, GRID_COLOR, (x+cell_size,y),(x+cell_size,y+cell_size), line_width)
-        pygame.draw.line(screen, GRID_COLOR, (x,y+cell_size),(x+cell_size,y+cell_size), line_width)
-        pygame.draw.line(screen, GRID_COLOR, (x,y),(x,y+cell_size), line_width)
+        pygame.draw.line(screen, BLACK, (x,y),(x+cell_size,y), line_width)
+        pygame.draw.line(screen, BLACK, (x+cell_size,y),(x+cell_size,y+cell_size), line_width)
+        pygame.draw.line(screen, BLACK, (x,y+cell_size),(x+cell_size,y+cell_size), line_width)
+        pygame.draw.line(screen, BLACK, (x,y),(x,y+cell_size), line_width)
 
 
 def draw_background():
@@ -235,21 +239,24 @@ def draw_cells():
             grid[row][col].draw_cell(screen)
 
 def display_img():
+    # images=[
+    #     "GamesImages\\bottom_to_right.png",
+    #     "GamesImages\\bottom_to_left.png",
+    #     "GamesImages\\top_to_right.png",
+    #     "GamesImages\\top_to_left.png",
+    #     "GamesImages\\vertical_right.png",
+    #     "GamesImages\\vertical_left.png",
+    #     "GamesImages\\horizontal_top.png",
+    #     "GamesImages\\horizontal_bottom.png",
+    #     "GamesImages\\vertical_right2.png",
+    #     "GamesImages\\vertical_left2.png",
+    #     "GamesImages\\horizontal_top2.png",
+    #     "GamesImages\\horizontal_bottom2.png",
+    #     "GamesImages\\bottom_to_right2.png",
+    #     "GamesImages\\bottom_to_left2.png",
+    # ]
     images=[
-        "GamesImages\\bottom_to_right.png",
-        "GamesImages\\bottom_to_left.png",
-        "GamesImages\\top_to_right.png",
-        "GamesImages\\top_to_left.png",
-        "GamesImages\\vertical_right.png",
-        "GamesImages\\vertical_left.png",
-        "GamesImages\\horizontal_top.png",
-        "GamesImages\\horizontal_bottom.png",
-        "GamesImages\\vertical_right2.png",
-        "GamesImages\\vertical_left2.png",
-        "GamesImages\\horizontal_top2.png",
-        "GamesImages\\horizontal_bottom2.png",
-        "GamesImages\\bottom_to_right2.png",
-        "GamesImages\\bottom_to_left2.png",
+        "pixil-frame-0.png",
     ]
     for i in range (len(images)):
         imp = pygame.image.load(images[i]).convert()
@@ -332,7 +339,7 @@ blinky.draw_ghost(screen=screen)
 
 
 GHOSTEVENT = pygame.USEREVENT+1
-pygame.time.set_timer(event=GHOSTEVENT, millis=500)
+pygame.time.set_timer(event=GHOSTEVENT, millis=1000)
 
 run  = True
 while run:
