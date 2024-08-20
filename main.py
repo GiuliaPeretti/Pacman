@@ -13,7 +13,7 @@ from settings import *
 class Ghost:
     def __init__(self):
         #0 -> Scatter, 1 -> Chase, 2 -> Frightened
-        self.mode=1
+        self.mode=0
         #0 -> Up, 1 -> Right, 2 -> Down, 3 -> Left
         self.direction=0
         self.starting=0
@@ -282,7 +282,7 @@ class Blinky(Ghost):
                 #Chase
                 #TODO: quando cambi da qualcosa a chase metti target nella posizione in cui e in quel momento
                 if self.target==[self.row,self.col] or self.target==[None,None]:
-                    self.arget=pacman.get_position()
+                    self.target=pacman.get_position()
             case 2:
                 #Frightened
                 return
@@ -340,6 +340,53 @@ class Pinky(Ghost):
             case 2:
                 #Frightened
                 return
+
+class Inky(Ghost):
+    def __init__(self):
+        super().__init__()
+        self.row=17
+        self.col=14
+        self.start_moves=[0,0,0,3]
+
+    def display_ghost(self, screen):
+        match(self.direction):
+            case 0:
+                img="Ghosts\Inky_up.png"
+            case 1:
+                img="Ghosts\Inky_right.png"
+            case 2:
+                img="Ghosts\Inky_down.png"
+            case 3:
+                img="Ghosts\Inky_left.png"                
+
+        img = pygame.image.load(img).convert()
+        screen.blit(img, (self.col*cell_size-8,self.row*cell_size-8))
+
+
+    def start_pinky(self):
+        global pinky
+        
+
+    def set_target(self):
+        global pacman
+        match(self.mode):
+            case 0:
+                #Scatter 0,25
+                self.target=[35,27]
+            case 1:
+                #Chase
+                #TODO: fai chase
+                if self.target==[self.row,self.col] or self.target==[None,None]:
+                    self.target=pacman.get_position()
+            case 2:
+                #Frightened
+                return
+
+
+
+
+
+
 
 
 def draw_background():
@@ -497,6 +544,7 @@ grid=[]
 pacman = Pacman()
 blinky = Blinky()
 pinky = Pinky()
+inky = Inky()
 
 init_grid()
 draw_background()
@@ -506,6 +554,7 @@ write_number()
 display_img()
 blinky.display_ghost(screen=screen)
 pinky.display_ghost(screen=screen)
+inky.display_ghost(screen=screen)
 
 GHOSTEVENT = pygame.USEREVENT+1
 pygame.time.set_timer(event=GHOSTEVENT, millis=500)
@@ -527,6 +576,7 @@ while run:
         if (event.type == GHOSTEVENT):
             pinky.move_ghost(grid, screen)
             blinky.move_ghost(grid, screen)
+            inky.move_ghost(grid, screen)
 
     pygame.display.flip()
     clock.tick(30)
