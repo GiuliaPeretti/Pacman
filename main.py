@@ -135,7 +135,7 @@ class Cell:
         self.col=col
         self.wall=wall
         self.intersection=intersection
-        #0 -> no dot, 1 -> dot, 2 -> food
+        #0 -> no dot, 1 -> dot, 2 -> power pill
         self.dot=dot
 
     def is_wall(self):
@@ -274,16 +274,27 @@ class Pacman:
 
     def check_dot(self):
         global dots_eaten
+        global score
+        global blinky
+        global pinky
+        global inky
+        global clyde
+
         match(grid[self.row][self.col].get_dot()):
             case 0:
                 return
             case 1:
                 grid[self.row][self.col].set_dot(0)
                 dots_eaten+=1
+                score+=10
             case 2:
                 #TODO: FOOD
                 grid[self.row][self.col].set_dot(0)
-
+                score+=50
+                blinky.set_mode(2)
+                pinky.set_mode(2)
+                inky.set_mode(2)
+                clyde.set_mode(2)
 
 class Blinky(Ghost):
     def __init__(self):
@@ -583,7 +594,6 @@ class Inky(Ghost):
         global clyde
         clyde.set_starting(0)
 
-
 class Clyde(Ghost):
     def __init__(self):
         super().__init__()
@@ -676,6 +686,7 @@ class Clyde(Ghost):
         img = pygame.image.load(img).convert()
         screen.blit(img, (self.col*cell_size-20,self.row*cell_size-8))
         self.starting+=1
+
 
 
 
@@ -791,11 +802,39 @@ def display_img():
 def display_numbers():
     images=[
         "Numbers\\0.png",
+        "Numbers\\1.png",
+        "Numbers\\2.png",
+        "Numbers\\3.png",
+        "Numbers\\4.png",
+        "Numbers\\5.png",
+        "Numbers\\6.png",
+        "Numbers\\7.png",
+        "Numbers\\8.png",
+        "Numbers\\9.png",
     ]
 
     for i in range(len(images)):
         imp = pygame.image.load(images[i]).convert()
         screen.blit(imp, (i*cell_size,2*cell_size))
+
+def display_score():
+    numbers=[
+        "Numbers\\0.png",
+        "Numbers\\1.png",
+        "Numbers\\2.png",
+        "Numbers\\3.png",
+        "Numbers\\4.png",
+        "Numbers\\5.png",
+        "Numbers\\6.png",
+        "Numbers\\7.png",
+        "Numbers\\8.png",
+        "Numbers\\9.png",
+    ]
+
+    s=str(score)
+    for i in range(0, len(s)):
+        imp = pygame.image.load(numbers[int(s[len(s)-1-i])]).convert()
+        screen.blit(imp, ((6-i)*cell_size,1*cell_size))
 
 
 def draw_ghost():
@@ -849,6 +888,7 @@ font = pygame.font.SysFont('arial', 20)
 
 grid=[]
 dots_eaten=0
+score=0
 pacman = Pacman()
 blinky = Blinky()
 pinky = Pinky()
@@ -859,8 +899,8 @@ init_grid()
 draw_background()
 write_number()
 display_img()
-display_numbers()
 draw_dots()
+display_score()
  
 pacman.display_pacman(screen=screen)
 blinky.display_ghost(screen=screen)
@@ -891,6 +931,7 @@ while run:
             for i in range(len(INPUTS)):
                 if (event.key==INPUTS[i]):
                     pacman.move_pacman(i)
+                    display_score()
                     break
         if (event.type == GHOSTEVENT):
             blinky.move_ghost(grid, screen)
