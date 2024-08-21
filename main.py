@@ -115,9 +115,6 @@ class Ghost:
         pygame.draw.line(screen, BLACK, (x,y+cell_size),(x+cell_size,y+cell_size), line_width)
         pygame.draw.line(screen, BLACK, (x,y),(x,y+cell_size), line_width)
 
-
-
-
 class Cell:
     def __init__(self, row: int, col: int, wall: bool, food: bool, intersection: bool) -> None:
         self.row=row
@@ -125,7 +122,6 @@ class Cell:
         self.wall=wall
         self.food=food
         self.intersection=intersection
-        self.pacman=False
 
     def is_wall(self):
         return self.wall
@@ -133,26 +129,23 @@ class Cell:
     def is_intersection(self):
         return self.intersection
 
-    def draw_cell(self, screen):
-        if self.wall:
-            color=(0,0,255)
-        elif self.pacman:
-            color=(255,255,0)
-        elif self.intersection:
-            color=(0,255,0)
-        else:
-            color=(0,0,0)
+    # def draw_cell(self, screen):
+    #     if self.wall:
+    #         color=(0,0,255)
+    #     elif self.pacman:
+    #         color=(255,255,0)
+    #     elif self.intersection:
+    #         color=(0,255,0)
+    #     else:
+    #         color=(0,0,0)
 
-        line_width=1
-        x,y,w,h=self.col*cell_size, self.row*cell_size, cell_size,cell_size
-        pygame.draw.rect(screen, color, (x,y,w,h))
-        pygame.draw.line(screen, GRID_COLOR, (x,y),(x+cell_size,y), line_width)
-        pygame.draw.line(screen, GRID_COLOR, (x+cell_size,y),(x+cell_size,y+cell_size), line_width)
-        pygame.draw.line(screen, GRID_COLOR, (x,y+cell_size),(x+cell_size,y+cell_size), line_width)
-        pygame.draw.line(screen, GRID_COLOR, (x,y),(x,y+cell_size), line_width)
-
-    def set_pacman(self, b):
-        self.pacman=b
+    #     line_width=1
+    #     x,y,w,h=self.col*cell_size, self.row*cell_size, cell_size,cell_size
+    #     pygame.draw.rect(screen, color, (x,y,w,h))
+    #     pygame.draw.line(screen, GRID_COLOR, (x,y),(x+cell_size,y), line_width)
+    #     pygame.draw.line(screen, GRID_COLOR, (x+cell_size,y),(x+cell_size,y+cell_size), line_width)
+    #     pygame.draw.line(screen, GRID_COLOR, (x,y+cell_size),(x+cell_size,y+cell_size), line_width)
+    #     pygame.draw.line(screen, GRID_COLOR, (x,y),(x,y+cell_size), line_width)
 
 class Pacman:
     def __init__(self):
@@ -166,83 +159,85 @@ class Pacman:
     def get_direction(self):
         return self.direction
     
-    def display_pacman(self):
-        color=(255,255,0)
-        line_width=1
-        x,y,w,h=self.col*cell_size, self.row*cell_size, cell_size,cell_size
-        pygame.draw.rect(screen, color, (x,y,w,h))
-        pygame.draw.line(screen, GRID_COLOR, (x,y),(x+cell_size,y), line_width)
-        pygame.draw.line(screen, GRID_COLOR, (x+cell_size,y),(x+cell_size,y+cell_size), line_width)
-        pygame.draw.line(screen, GRID_COLOR, (x,y+cell_size),(x+cell_size,y+cell_size), line_width)
-        pygame.draw.line(screen, GRID_COLOR, (x,y),(x,y+cell_size), line_width)
+    def display_pacman(self, screen):
+        match(self.direction):
+            case 0:
+                img="Pacman\Pacman_up.png"                
+            case 1:
+                img="Pacman\Pacman_right.png"                
+            case 2:
+                img="Pacman\Pacman_down.png"                
+            case 3:
+                img="Pacman\Pacman_left.png"                
 
-    def clear_pacman(self):
+        img = pygame.image.load(img).convert()
+        screen.blit(img, (self.col*cell_size-8,self.row*cell_size-8))
+
+    def clear_pacman(self, screen):
         color=(0,0,0)
         line_width=1
-        x,y,w,h=self.col*cell_size, self.row*cell_size, cell_size,cell_size
+        x,y,w,h=self.col*cell_size-8, self.row*cell_size-8, 39,39
         pygame.draw.rect(screen, color, (x,y,w,h))
-        pygame.draw.line(screen, GRID_COLOR, (x,y),(x+cell_size,y), line_width)
-        pygame.draw.line(screen, GRID_COLOR, (x+cell_size,y),(x+cell_size,y+cell_size), line_width)
-        pygame.draw.line(screen, GRID_COLOR, (x,y+cell_size),(x+cell_size,y+cell_size), line_width)
-        pygame.draw.line(screen, GRID_COLOR, (x,y),(x,y+cell_size), line_width)
+        # pygame.draw.line(screen, GRID_COLOR, (x,y),(x+cell_size,y), line_width)
+        # pygame.draw.line(screen, GRID_COLOR, (x+cell_size,y),(x+cell_size,y+cell_size), line_width)
+        # pygame.draw.line(screen, GRID_COLOR, (x,y+cell_size),(x+cell_size,y+cell_size), line_width)
+        # pygame.draw.line(screen, GRID_COLOR, (x,y),(x,y+cell_size), line_width)
 
     def move_pacman(self, dir):
         match(dir):
             case 0: 
                 #UP
                 if self.row-1!=-1 and not grid[self.row-1][self.col].is_wall():
-                    grid[self.row][self.col].set_pacman(b=False)
-                    grid[self.row][self.col].draw_cell(screen)
-                    grid[self.row-1][self.col].set_pacman(b=True)
-                    grid[self.row-1][self.col].draw_cell(screen)
+                    self.clear_pacman(screen)
                     self.row=self.row-1
+                    self.direction=0
+                    self.display_pacman(screen)
+                    
             case 1:
                 #RIGHT
                 if self.col+1==len(grid[0]) and self.row==17:
-                    grid[self.row][self.col].set_pacman(b=False)
-                    grid[self.row][self.col].draw_cell(screen)
-                    grid[self.row][0].set_pacman(b=True)
-                    grid[self.row][0].draw_cell(screen)
-                    self.col=0  
+                    self.clear_pacman(screen)
+                    self.col=0
+                    self.direction=1
+                    self.display_pacman(screen)
+                      
                     return             
 
                 if self.col+1!=len(grid[0]) and not grid[self.row][self.col+1].is_wall():
-                    grid[self.row][self.col].set_pacman(b=False)
-                    grid[self.row][self.col].draw_cell(screen)
-                    grid[self.row][self.col+1].set_pacman(b=True)
-                    grid[self.row][self.col+1].draw_cell(screen)
+                    self.clear_pacman(screen)
                     self.col=self.col+1
+                    self.direction=1
+                    self.display_pacman(screen)
+                    
             case 2:
                 #DOWN
                 if self.row+1!=len(grid) and not grid[self.row+1][self.col].is_wall():
-                    grid[self.row][self.col].set_pacman(b=False)
-                    grid[self.row][self.col].draw_cell(screen)
-                    grid[self.row+1][self.col].set_pacman(b=True)
-                    grid[self.row+1][self.col].draw_cell(screen)
+                    self.clear_pacman(screen)
                     self.row=self.row+1
+                    self.direction=2
+                    self.display_pacman(screen)
             case 3:
                 #LEFT
                 if self.col-1==-1 and self.row==17:
-                    grid[self.row][self.col].set_pacman(b=False)
-                    grid[self.row][self.col].draw_cell(screen)
-                    grid[self.row][27].set_pacman(b=True)
-                    grid[self.row][27].draw_cell(screen)
-                    self.col=27     
+                    self.clear_pacman(screen)
+                    self.col=27   
+                    self.direction=3  
+                    self.display_pacman(screen)
                     return
                 
                 if self.col-1!=-1 and not grid[self.row][self.col-1].is_wall():
-                    grid[self.row][self.col].set_pacman(b=False)
-                    grid[self.row][self.col].draw_cell(screen)  
-                    grid[self.row][self.col-1].set_pacman(b=True)
-                    grid[self.row][self.col-1].draw_cell(screen)
+                    self.clear_pacman(screen)
                     self.col=self.col-1
+                    self.direction=3
+                    self.display_pacman(screen)
 
 class Blinky(Ghost):
     def __init__(self):
         super().__init__()
-        self.row=17
-        self.col=12
-        self.start_moves=[0,1,0,0,3]
+        self.direction=3
+        self.row=14
+        self.col=13
+        self.start_moves=[3]
 
     def display_ghost(self, screen):
         # color=(255,0,0)
@@ -345,7 +340,7 @@ class Inky(Ghost):
     def __init__(self):
         super().__init__()
         self.row=17
-        self.col=14
+        self.col=11
         self.start_moves=[0,0,0,3]
 
     def display_ghost(self, screen):
@@ -382,7 +377,46 @@ class Inky(Ghost):
                 #Frightened
                 return
 
+class Clyde(Ghost):
+    def __init__(self):
+        super().__init__()
+        self.row=17
+        self.col=11
+        self.start_moves=[0,0,0,3]
 
+    def display_ghost(self, screen):
+        match(self.direction):
+            case 0:
+                img="Ghosts\Inky_up.png"
+            case 1:
+                img="Ghosts\Inky_right.png"
+            case 2:
+                img="Ghosts\Inky_down.png"
+            case 3:
+                img="Ghosts\Inky_left.png"                
+
+        img = pygame.image.load(img).convert()
+        screen.blit(img, (self.col*cell_size-8,self.row*cell_size-8))
+
+
+    def start_pinky(self):
+        global pinky
+        
+
+    def set_target(self):
+        global pacman
+        match(self.mode):
+            case 0:
+                #Scatter 0,25
+                self.target=[35,27]
+            case 1:
+                #Chase
+                #TODO: fai chase
+                if self.target==[self.row,self.col] or self.target==[None,None]:
+                    self.target=pacman.get_position()
+            case 2:
+                #Frightened
+                return
 
 
 
@@ -462,13 +496,12 @@ def init_grid():
                 intersection=True
             temp.append(Cell(row, col, wall, food, intersection))
         grid.append(temp)
-    grid[26][14].set_pacman(True)
                 
-def draw_cells():
-    global grid
-    for row in range (len(grid)):
-        for col in range (len(grid[0])):
-            grid[row][col].draw_cell(screen)
+# def draw_cells():
+#     global grid
+#     for row in range (len(grid)):
+#         for col in range (len(grid[0])):
+#             grid[row][col].draw_cell(screen)
 
 def display_img():
     # images=[
@@ -548,16 +581,17 @@ inky = Inky()
 
 init_grid()
 draw_background()
-draw_grid(cell_size)
-draw_cells()
 write_number()
 display_img()
+pacman.display_pacman(screen=screen)
 blinky.display_ghost(screen=screen)
 pinky.display_ghost(screen=screen)
 inky.display_ghost(screen=screen)
 
+draw_grid(cell_size)
+
 GHOSTEVENT = pygame.USEREVENT+1
-pygame.time.set_timer(event=GHOSTEVENT, millis=500)
+pygame.time.set_timer(event=GHOSTEVENT, millis=20000)
 
 run  = True
 while run:
