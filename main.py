@@ -20,7 +20,7 @@ class Ghost:
         self.target=[None,None]
 
     def move_ghost(self, grid, screen):
-        if self.starting<len(self.start_moves):
+        if self.starting<=len(self.start_moves):
             self.start_procedure()
             return
 
@@ -64,7 +64,6 @@ class Ghost:
 
         
         # if grid[self.row][self.col].is_intersection() or self.starting==4:
-        self.starting=len(self.start_moves)
         self.set_target()
 
         min=1000
@@ -269,6 +268,7 @@ class Blinky(Ghost):
 
     def start_pinky(self):
         global pinky
+        pinky.set_starting(0)
         
 
     def set_target(self):
@@ -287,8 +287,42 @@ class Blinky(Ghost):
                 return
 
     def start_procedure(self):
-        self.starting+=1
-        return self.start_moves[self.starting-1]
+        if self.starting==len(self.start_moves):
+            self.start_pinky()
+            self.starting+=1
+            dir = self.chose_direction(grid)
+
+        else:
+            dir=self.start_moves[0]
+            self.starting+=1
+        
+        self.direction=dir
+        match(dir):
+            case 0: 
+                #UP
+                # if not grid[self.row-1][self.col].is_wall():
+                self.clear_ghost()
+                self.row=self.row-1
+                self.display_ghost(screen)
+                    
+            case 1:
+                #RIGHT
+                # if not grid[self.row][self.col+1].is_wall():
+                self.clear_ghost()
+                self.col=self.col+1
+                self.display_ghost(screen)
+            case 2:
+                #DOWN
+                # if not grid[self.row+1][self.col].is_wall():
+                self.clear_ghost()
+                self.row=self.row+1
+                self.display_ghost(screen)
+            case 3:
+                #LEFT
+                # if not grid[self.row][self.col-1].is_wall():
+                self.clear_ghost()
+                self.col=self.col-1
+                self.display_ghost(screen)
 
 
 
@@ -299,6 +333,9 @@ class Pinky(Ghost):
         self.col=14
         self.starting=-1
         self.start_moves=[0,0,0,3]
+
+    def set_starting(self, n):
+        self.starting=n
 
     def display_ghost(self, screen):
         match(self.direction):
@@ -348,6 +385,7 @@ class Pinky(Ghost):
                 return
        
     def start_procedure(self):
+        
         if self.starting==-1:
             match(self.direction):
                 case 0:
@@ -360,11 +398,16 @@ class Pinky(Ghost):
                     img="Ghosts\Pinky_left.png"   
             img = pygame.image.load(img).convert()
             screen.blit(img, (self.col*cell_size-20,self.row*cell_size-8))
-            self.starting+=1
             return
 
+        if self.starting==len(self.start_moves):
+            self.starting+=1
+            self.direction=self.chose_direction(grid)
+        else:
+            self.direction=self.start_moves[self.starting]
+        x,y,w,h=self.col*cell_size-20, self.row*cell_size-8, 42,42
+        pygame.draw.rect(screen, BLACK, (x,y,w,h))
 
-        self.direction=self.start_moves[self.starting]
         match(self.direction):
             case 0:
                 img="Ghosts\Pinky_up.png"
@@ -426,10 +469,12 @@ class Inky(Ghost):
                 return
 
     def start_procedure(self):
+        if self.starting==len(self.start_moves):
+            self.starting+=1
+            return
+        
         self.starting+=1
         return self.start_moves[self.starting-1]     
-
-
 
 
 class Clyde(Ghost):
@@ -469,6 +514,10 @@ class Clyde(Ghost):
                 return
 
     def start_procedure(self):
+        if self.starting==len(self.start_moves):
+            self.starting+=1
+            return
+
         self.starting+=1
         return self.start_moves[self.starting-1]
 
@@ -661,14 +710,11 @@ while run:
             for i in range(len(INPUTS)):
                 if (event.key==INPUTS[i]):
                     pacman.move_pacman(i)
-                    pinky.move_ghost(grid, screen)
-                    blinky.move_ghost(grid, screen)
-                    # inky.move_ghost(grid, screen)
-                    # clyde.move_ghost(grid, screen)
                     break
         if (event.type == GHOSTEVENT):
-            pinky.move_ghost(grid, screen)
             blinky.move_ghost(grid, screen)
+            pinky.move_ghost(grid, screen)
+
 
     pygame.display.flip()
     clock.tick(30)
