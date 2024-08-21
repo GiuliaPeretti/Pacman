@@ -19,12 +19,13 @@ class Ghost:
         self.starting=0
         self.target=[None,None]
 
+    def set_starting(self, n):
+        self.starting=n
+
     def move_ghost(self, grid, screen):
         if self.starting<=len(self.start_moves):
             self.start_procedure()
             return
-
-
 
         dir = self.chose_direction(grid)
         self.direction=dir
@@ -113,24 +114,41 @@ class Ghost:
         line_width=1
         x,y,w,h=self.col*cell_size-8, self.row*cell_size-8, 42,42
         pygame.draw.rect(screen, BLACK, (x,y,w,h))
-        pygame.draw.line(screen, BLACK, (x,y),(x+cell_size,y), line_width)
-        pygame.draw.line(screen, BLACK, (x+cell_size,y),(x+cell_size,y+cell_size), line_width)
-        pygame.draw.line(screen, BLACK, (x,y+cell_size),(x+cell_size,y+cell_size), line_width)
-        pygame.draw.line(screen, BLACK, (x,y),(x,y+cell_size), line_width)
+        grid[self.row][self.col].draw_dot(screen)
+        # pygame.draw.line(screen, BLACK, (x,y),(x+cell_size,y), line_width)
+        # pygame.draw.line(screen, BLACK, (x+cell_size,y),(x+cell_size,y+cell_size), line_width)
+        # pygame.draw.line(screen, BLACK, (x,y+cell_size),(x+cell_size,y+cell_size), line_width)
+        # pygame.draw.line(screen, BLACK, (x,y),(x,y+cell_size), line_width)
 
 class Cell:
-    def __init__(self, row: int, col: int, wall: bool, food: bool, intersection: bool) -> None:
+    def __init__(self, row: int, col: int, wall: bool, dot: int, intersection: bool) -> None:
         self.row=row
         self.col=col
         self.wall=wall
-        self.food=food
         self.intersection=intersection
+        #0 -> no dot, 1 -> dot, 2 -> food
+        self.dot=dot
 
     def is_wall(self):
         return self.wall
     
     def is_intersection(self):
         return self.intersection
+    
+    def set_dot(self, n):
+        self.dot=n
+    
+    def draw_dot(self, scren):
+        match(self.dot):
+            case 0:
+                pass
+                # x,y,w,h=self.col*cell_size, self.row*cell_size, cell_size,cell_size
+                # pygame.draw.rect(screen, PINK, (x,y,w,h))
+            case 1:
+                x,y,w,h=self.col*cell_size, self.row*cell_size, cell_size,cell_size
+                pygame.draw.rect(screen, BLACK, (x,y,w,h))
+                x,y,w,h=self.col*cell_size+9, self.row*cell_size+9, 6, 6
+                pygame.draw.rect(screen, (204, 147, 139), (x,y,w,h))                
 
     # def draw_cell(self, screen):
     #     if self.wall:
@@ -332,10 +350,9 @@ class Pinky(Ghost):
         self.row=17
         self.col=14
         self.starting=-1
+        self.direction=2
         self.start_moves=[0,0,0,3]
 
-    def set_starting(self, n):
-        self.starting=n
 
     def display_ghost(self, screen):
         match(self.direction):
@@ -385,7 +402,6 @@ class Pinky(Ghost):
                 return
        
     def start_procedure(self):
-        
         if self.starting==-1:
             match(self.direction):
                 case 0:
@@ -401,12 +417,17 @@ class Pinky(Ghost):
             return
 
         if self.starting==len(self.start_moves):
+            self.start_inky()
             self.starting+=1
-            self.direction=self.chose_direction(grid)
+            x,y,w,h=self.col*cell_size-20, self.row*cell_size-8, 42,42
+            pygame.draw.rect(screen, BLACK, (x,y,w,h))
+            self.move_ghost(grid, screen)
+            return
         else:
             self.direction=self.start_moves[self.starting]
         x,y,w,h=self.col*cell_size-20, self.row*cell_size-8, 42,42
         pygame.draw.rect(screen, BLACK, (x,y,w,h))
+        grid[self.row][self.col].draw_dot(screen)
 
         match(self.direction):
             case 0:
@@ -426,13 +447,21 @@ class Pinky(Ghost):
         screen.blit(img, (self.col*cell_size-20,self.row*cell_size-8))
         self.starting+=1
 
+    def start_inky(self):
+        global inky
+        inky.set_starting(0)
+
+
 
 class Inky(Ghost):
     def __init__(self):
         super().__init__()
         self.row=17
         self.col=12
-        self.start_moves=[0,0,0,3]
+        self.starting=-1
+        self.direction=0
+        self.start_moves=[1,1,0,0,0,3]
+
 
     def display_ghost(self, screen):
         match(self.direction):
@@ -449,8 +478,6 @@ class Inky(Ghost):
         screen.blit(img, (self.col*cell_size-8,self.row*cell_size-8))
 
 
-    def start_pinky(self):
-        global pinky
         
 
     def set_target(self):
@@ -469,12 +496,54 @@ class Inky(Ghost):
                 return
 
     def start_procedure(self):
+        if self.starting==-1:
+            match(self.direction):
+                case 0:
+                    img="Ghosts\Inky_up.png"
+                case 1:
+                    img="Ghosts\Inky_right.png"
+                case 2:
+                    img="Ghosts\Inky_down.png"
+                case 3:
+                    img="Ghosts\Inky_left.png"   
+            img = pygame.image.load(img).convert()
+            screen.blit(img, (self.col*cell_size-20,self.row*cell_size-8))
+            return
+
         if self.starting==len(self.start_moves):
             self.starting+=1
+            self.start_clyde()
+            x,y,w,h=self.col*cell_size-20, self.row*cell_size-8, 42,42
+            pygame.draw.rect(screen, BLACK, (x,y,w,h))
+            self.move_ghost(grid, screen)
             return
-        
+        else:
+            self.direction=self.start_moves[self.starting]
+        x,y,w,h=self.col*cell_size-20, self.row*cell_size-8, 42,42
+        pygame.draw.rect(screen, BLACK, (x,y,w,h))
+        grid[self.row][self.col].draw_dot(screen)
+
+        match(self.direction):
+            case 0:
+                img="Ghosts\Inky_up.png"
+                self.row-=1
+            case 1:
+                img="Ghosts\Inky_right.png"
+                self.col+=1
+            case 2:
+                img="Ghosts\Inky_down.png"
+                self.row+=1
+            case 3:
+                img="Ghosts\Inky_left.png"   
+                self.col-=1             
+
+        img = pygame.image.load(img).convert()
+        screen.blit(img, (self.col*cell_size-20,self.row*cell_size-8))
         self.starting+=1
-        return self.start_moves[self.starting-1]     
+
+    def start_clyde(self):
+        global clyde
+        clyde.set_starting(0)
 
 
 class Clyde(Ghost):
@@ -482,7 +551,9 @@ class Clyde(Ghost):
         super().__init__()
         self.row=17
         self.col=16
-        self.start_moves=[0,0,0,3]
+        self.starting=-1
+        self.direction=0
+        self.start_moves=[3,3,0,0,0,3]
 
     def display_ghost(self, screen):
         match(self.direction):
@@ -514,14 +585,49 @@ class Clyde(Ghost):
                 return
 
     def start_procedure(self):
-        if self.starting==len(self.start_moves):
-            self.starting+=1
+        if self.starting==-1:
+            match(self.direction):
+                case 0:
+                    img="Ghosts\Clyde_up.png"
+                case 1:
+                    img="Ghosts\Clyde_right.png"
+                case 2:
+                    img="Ghosts\Clyde_down.png"
+                case 3:
+                    img="Ghosts\Clyde_left.png"   
+            img = pygame.image.load(img).convert()
+            screen.blit(img, (self.col*cell_size-20,self.row*cell_size-8))
             return
 
+        if self.starting==len(self.start_moves):
+            self.starting+=1
+            x,y,w,h=self.col*cell_size-20, self.row*cell_size-8, 42,42
+            pygame.draw.rect(screen, BLACK, (x,y,w,h))
+            self.move_ghost(grid, screen)
+            return
+        else:
+            self.direction=self.start_moves[self.starting]
+        x,y,w,h=self.col*cell_size-20, self.row*cell_size-8, 42,42
+        pygame.draw.rect(screen, BLACK, (x,y,w,h))
+        grid[self.row][self.col].draw_dot(screen)
+
+        match(self.direction):
+            case 0:
+                img="Ghosts\Clyde_up.png"
+                self.row-=1
+            case 1:
+                img="Ghosts\Clyde_right.png"
+                self.col+=1
+            case 2:
+                img="Ghosts\Clyde_down.png"
+                self.row+=1
+            case 3:
+                img="Ghosts\Clyde_left.png"   
+                self.col-=1             
+
+        img = pygame.image.load(img).convert()
+        screen.blit(img, (self.col*cell_size-20,self.row*cell_size-8))
         self.starting+=1
-        return self.start_moves[self.starting-1]
-
-
 
 
 
@@ -590,13 +696,14 @@ def init_grid():
         temp=[]
         for col in range (width_in_cell):
             wall=True
-            food=False
+            dot=0
             intersection=False
             if [row,col] in walkable:
                 wall=False
+                dot=1
             if [row,col] in intersections:
                 intersection=True
-            temp.append(Cell(row, col, wall, food, intersection))
+            temp.append(Cell(row, col, wall, dot, intersection))
         grid.append(temp)
                 
 # def draw_cells():
@@ -661,7 +768,10 @@ def draw_ghost():
         imp = pygame.image.load(ghosts[i]).convert()
         screen.blit(imp, (count*cell_size-10,count1*cell_size-10))
 
-            
+def draw_dots():
+    for row in grid:
+        for cell in row:
+            cell.draw_dot(screen)
 
         
         
@@ -686,9 +796,15 @@ init_grid()
 draw_background()
 write_number()
 display_img()
+draw_dots()
+ 
 pacman.display_pacman(screen=screen)
 blinky.display_ghost(screen=screen)
 pinky.start_procedure()
+inky.start_procedure()
+clyde.start_procedure()
+# grid[23][4].set_dot(1)
+# grid[23][4].draw_dot(screen)
 # inky.display_ghost(screen=screen)
 # clyde.display_ghost(screen=screen)
 
@@ -714,6 +830,8 @@ while run:
         if (event.type == GHOSTEVENT):
             blinky.move_ghost(grid, screen)
             pinky.move_ghost(grid, screen)
+            inky.move_ghost(grid, screen)
+            clyde.move_ghost(grid, screen)
 
 
     pygame.display.flip()
