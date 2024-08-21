@@ -20,6 +20,12 @@ class Ghost:
         self.target=[None,None]
 
     def move_ghost(self, grid, screen):
+        if self.starting<len(self.start_moves):
+            self.start_procedure()
+            return
+
+
+
         dir = self.chose_direction(grid)
         self.direction=dir
         match(dir):
@@ -50,9 +56,7 @@ class Ghost:
                 self.display_ghost(screen)
 
     def chose_direction(self, grid):
-        if self.starting<len(self.start_moves):
-            self.starting+=1
-            return self.start_moves[self.starting-1]
+
 
         if self.mode==2:
             valids=self.get_valid_dir(grid)
@@ -282,11 +286,18 @@ class Blinky(Ghost):
                 #Frightened
                 return
 
+    def start_procedure(self):
+        self.starting+=1
+        return self.start_moves[self.starting-1]
+
+
+
 class Pinky(Ghost):
     def __init__(self):
         super().__init__()
         self.row=17
-        self.col=13
+        self.col=14
+        self.starting=-1
         self.start_moves=[0,0,0,3]
 
     def display_ghost(self, screen):
@@ -335,12 +346,49 @@ class Pinky(Ghost):
             case 2:
                 #Frightened
                 return
+       
+    def start_procedure(self):
+        if self.starting==-1:
+            match(self.direction):
+                case 0:
+                    img="Ghosts\Pinky_up.png"
+                case 1:
+                    img="Ghosts\Pinky_right.png"
+                case 2:
+                    img="Ghosts\Pinky_down.png"
+                case 3:
+                    img="Ghosts\Pinky_left.png"   
+            img = pygame.image.load(img).convert()
+            screen.blit(img, (self.col*cell_size-20,self.row*cell_size-8))
+            self.starting+=1
+            return
+
+
+        self.direction=self.start_moves[self.starting]
+        match(self.direction):
+            case 0:
+                img="Ghosts\Pinky_up.png"
+                self.row-=1
+            case 1:
+                img="Ghosts\Pinky_right.png"
+                self.col+=1
+            case 2:
+                img="Ghosts\Pinky_down.png"
+                self.row+=1
+            case 3:
+                img="Ghosts\Pinky_left.png"   
+                self.col-=1             
+
+        img = pygame.image.load(img).convert()
+        screen.blit(img, (self.col*cell_size-20,self.row*cell_size-8))
+        self.starting+=1
+
 
 class Inky(Ghost):
     def __init__(self):
         super().__init__()
         self.row=17
-        self.col=11
+        self.col=12
         self.start_moves=[0,0,0,3]
 
     def display_ghost(self, screen):
@@ -376,39 +424,41 @@ class Inky(Ghost):
             case 2:
                 #Frightened
                 return
+
+    def start_procedure(self):
+        self.starting+=1
+        return self.start_moves[self.starting-1]     
+
+
+
 
 class Clyde(Ghost):
     def __init__(self):
         super().__init__()
         self.row=17
-        self.col=11
+        self.col=16
         self.start_moves=[0,0,0,3]
 
     def display_ghost(self, screen):
         match(self.direction):
             case 0:
-                img="Ghosts\Inky_up.png"
+                img="Ghosts\Clyde_up.png"
             case 1:
-                img="Ghosts\Inky_right.png"
+                img="Ghosts\Clyde_right.png"
             case 2:
-                img="Ghosts\Inky_down.png"
+                img="Ghosts\Clyde_down.png"
             case 3:
-                img="Ghosts\Inky_left.png"                
+                img="Ghosts\Clyde_left.png"                
 
         img = pygame.image.load(img).convert()
-        screen.blit(img, (self.col*cell_size-8,self.row*cell_size-8))
-
-
-    def start_pinky(self):
-        global pinky
-        
+        screen.blit(img, (self.col*cell_size-8,self.row*cell_size-8))  
 
     def set_target(self):
         global pacman
         match(self.mode):
             case 0:
                 #Scatter 0,25
-                self.target=[35,27]
+                self.target=[35,0]
             case 1:
                 #Chase
                 #TODO: fai chase
@@ -418,6 +468,9 @@ class Clyde(Ghost):
                 #Frightened
                 return
 
+    def start_procedure(self):
+        self.starting+=1
+        return self.start_moves[self.starting-1]
 
 
 
@@ -427,7 +480,7 @@ def draw_background():
     screen.fill(BACKGROUND_COLOR)
 
 def draw_grid(cell_size):
-    line_width=3
+    line_width=1
     for i in range (0,SCREEN_WIDTH+1,cell_size):
         pygame.draw.line(screen, PINK, (i,0),(i,SCREEN_HEIGHT), line_width)
     for i in range (0,SCREEN_HEIGHT+1,cell_size):
@@ -578,6 +631,7 @@ pacman = Pacman()
 blinky = Blinky()
 pinky = Pinky()
 inky = Inky()
+clyde = Clyde()
 
 init_grid()
 draw_background()
@@ -585,13 +639,14 @@ write_number()
 display_img()
 pacman.display_pacman(screen=screen)
 blinky.display_ghost(screen=screen)
-pinky.display_ghost(screen=screen)
-inky.display_ghost(screen=screen)
+pinky.start_procedure()
+# inky.display_ghost(screen=screen)
+# clyde.display_ghost(screen=screen)
 
-draw_grid(cell_size)
+# draw_grid(cell_size)
 
 GHOSTEVENT = pygame.USEREVENT+1
-pygame.time.set_timer(event=GHOSTEVENT, millis=20000)
+pygame.time.set_timer(event=GHOSTEVENT, millis=500)
 
 run  = True
 while run:
@@ -606,11 +661,14 @@ while run:
             for i in range(len(INPUTS)):
                 if (event.key==INPUTS[i]):
                     pacman.move_pacman(i)
+                    pinky.move_ghost(grid, screen)
+                    blinky.move_ghost(grid, screen)
+                    # inky.move_ghost(grid, screen)
+                    # clyde.move_ghost(grid, screen)
                     break
         if (event.type == GHOSTEVENT):
             pinky.move_ghost(grid, screen)
             blinky.move_ghost(grid, screen)
-            inky.move_ghost(grid, screen)
 
     pygame.display.flip()
     clock.tick(30)
