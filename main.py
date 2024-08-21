@@ -146,11 +146,14 @@ class Cell:
     
     def set_dot(self, n):
         self.dot=n
+
+    def get_dot(self):
+        return self.dot
     
     def draw_dot(self, scren):
         match(self.dot):
             case 0:
-                pass
+                return
                 # x,y,w,h=self.col*cell_size, self.row*cell_size, cell_size,cell_size
                 # pygame.draw.rect(screen, PINK, (x,y,w,h))
             case 1:
@@ -223,6 +226,8 @@ class Pacman:
                     self.row=self.row-1
                     self.direction=0
                     self.display_pacman(screen)
+                    self.check_dot()
+                    
                     
             case 1:
                 #RIGHT
@@ -231,6 +236,7 @@ class Pacman:
                     self.col=0
                     self.direction=1
                     self.display_pacman(screen)
+                    self.check_dot()
                       
                     return             
 
@@ -239,6 +245,7 @@ class Pacman:
                     self.col=self.col+1
                     self.direction=1
                     self.display_pacman(screen)
+                    self.check_dot()
                     
             case 2:
                 #DOWN
@@ -247,6 +254,7 @@ class Pacman:
                     self.row=self.row+1
                     self.direction=2
                     self.display_pacman(screen)
+                    self.check_dot()
             case 3:
                 #LEFT
                 if self.col-1==-1 and self.row==17:
@@ -254,6 +262,7 @@ class Pacman:
                     self.col=27   
                     self.direction=3  
                     self.display_pacman(screen)
+                    self.check_dot()
                     return
                 
                 if self.col-1!=-1 and not grid[self.row][self.col-1].is_wall():
@@ -261,6 +270,20 @@ class Pacman:
                     self.col=self.col-1
                     self.direction=3
                     self.display_pacman(screen)
+                    self.check_dot()
+
+    def check_dot(self):
+        global dots_eaten
+        match(grid[self.row][self.col].get_dot()):
+            case 0:
+                return
+            case 1:
+                grid[self.row][self.col].set_dot(0)
+                dots_eaten+=1
+            case 2:
+                #TODO: FOOD
+                grid[self.row][self.col].set_dot(0)
+
 
 class Blinky(Ghost):
     def __init__(self):
@@ -759,12 +782,21 @@ def display_img():
     #     "GamesImages\\bottom_to_right2.png",
     #     "GamesImages\\bottom_to_left2.png",
     # ]
+
+    imp = pygame.image.load("Background.png").convert()
+    screen.blit(imp, (0,0))
+    imp = pygame.image.load("High_score.png").convert()
+    screen.blit(imp, (9*cell_size,2))
+
+def display_numbers():
     images=[
-        "pixil-frame-0.png",
+        "Numbers\\0.png",
     ]
-    for i in range (len(images)):
+
+    for i in range(len(images)):
         imp = pygame.image.load(images[i]).convert()
-        screen.blit(imp, (i*300,0))
+        screen.blit(imp, (i*cell_size,2*cell_size))
+
 
 def draw_ghost():
     ghosts=[
@@ -827,16 +859,15 @@ init_grid()
 draw_background()
 write_number()
 display_img()
+display_numbers()
 draw_dots()
  
 pacman.display_pacman(screen=screen)
-blinky.set_position(4,25)
 blinky.display_ghost(screen=screen)
 pinky.start_procedure()
 inky.start_procedure()
 clyde.start_procedure()
-inky.set_mode(1)
-pinky.set_starting(0)
+
 # grid[23][4].set_dot(1)
 # grid[23][4].draw_dot(screen)
 # inky.display_ghost(screen=screen)
@@ -862,7 +893,7 @@ while run:
                     pacman.move_pacman(i)
                     break
         if (event.type == GHOSTEVENT):
-            # blinky.move_ghost(grid, screen)
+            blinky.move_ghost(grid, screen)
             pinky.move_ghost(grid, screen)
             inky.move_ghost(grid, screen)
             clyde.move_ghost(grid, screen)
