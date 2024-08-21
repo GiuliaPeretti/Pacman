@@ -19,8 +19,18 @@ class Ghost:
         self.starting=0
         self.target=[None,None]
 
+    def get_position(self):
+        return [self.row,self.col]
+
     def set_starting(self, n):
         self.starting=n
+
+    def set_mode(self, n):
+        self.mode=n
+
+    def set_position(self, row, col):
+        self.row=row
+        self.col=col
 
     def move_ghost(self, grid, screen):
         if self.starting<=len(self.start_moves):
@@ -88,7 +98,6 @@ class Ghost:
     def get_valid_dir(self, grid):
         valids=[]
         possible_dir=[[-1,0], [0,+1], [+1,0], [0,-1]]
-        print(self.row, self.col)
         for i in range (len(possible_dir)):
             row = self.row+possible_dir[i][0]
             col = self.col+possible_dir[i][1]
@@ -148,7 +157,12 @@ class Cell:
                 x,y,w,h=self.col*cell_size, self.row*cell_size, cell_size,cell_size
                 pygame.draw.rect(screen, BLACK, (x,y,w,h))
                 x,y,w,h=self.col*cell_size+9, self.row*cell_size+9, 6, 6
-                pygame.draw.rect(screen, (204, 147, 139), (x,y,w,h))                
+                pygame.draw.rect(screen, (205, 150, 140), (x,y,w,h))      
+            case 2:
+                img = pygame.image.load("Food.png").convert()
+                screen.blit(img, (self.col*cell_size,self.row*cell_size))
+
+
 
     # def draw_cell(self, screen):
     #     if self.wall:
@@ -199,10 +213,6 @@ class Pacman:
         line_width=1
         x,y,w,h=self.col*cell_size-8, self.row*cell_size-8, 39,39
         pygame.draw.rect(screen, color, (x,y,w,h))
-        # pygame.draw.line(screen, GRID_COLOR, (x,y),(x+cell_size,y), line_width)
-        # pygame.draw.line(screen, GRID_COLOR, (x+cell_size,y),(x+cell_size,y+cell_size), line_width)
-        # pygame.draw.line(screen, GRID_COLOR, (x,y+cell_size),(x+cell_size,y+cell_size), line_width)
-        # pygame.draw.line(screen, GRID_COLOR, (x,y),(x,y+cell_size), line_width)
 
     def move_pacman(self, dir):
         match(dir):
@@ -342,8 +352,6 @@ class Blinky(Ghost):
                 self.col=self.col-1
                 self.display_ghost(screen)
 
-
-
 class Pinky(Ghost):
     def __init__(self):
         super().__init__()
@@ -376,26 +384,26 @@ class Pinky(Ghost):
                 self.target=[0,3]
             case 1:
                 #Chase
-                if self.target==[self.row,self.col] or self.target==[None,None]:
-                    pacman_pos=pacman.get_position()
-                    pacman_dir=pacman.get_direction()
-                    match(pacman_dir):
-                        case 0:
-                            self.target=[pacman_pos[0]-4,pacman_pos[1]]
-                            while grid[self.target[0]][self.target[1]].is_wall():
-                                self.target[0]+=1
-                        case 1:
-                            self.target=[pacman_pos[0],pacman_pos[1]+4]
-                            while grid[self.target[0]][self.target[1]].is_wall():
-                                self.target[1]-=1
-                        case 2:
-                            self.target=[pacman_pos[0]+4, pacman_pos[1]]
-                            while grid[self.target[0]][self.target[1]].is_wall():
-                                self.target[0]-=1                            
-                        case 3:
-                            self.target=[pacman_pos[0], pacman_pos[1]-4]
-                            while grid[self.target[0]][self.target[1]].is_wall():
-                                self.target[1]+=1
+                # if self.target==[self.row,self.col] or self.target==[None,None]:
+                pacman_pos=pacman.get_position()
+                pacman_dir=pacman.get_direction()
+                match(pacman_dir):
+                    case 0:
+                        self.target=[pacman_pos[0]-4,pacman_pos[1]]
+                        while grid[self.target[0]][self.target[1]].is_wall():
+                            self.target[0]+=1
+                    case 1:
+                        self.target=[pacman_pos[0],pacman_pos[1]+4]
+                        while grid[self.target[0]][self.target[1]].is_wall():
+                            self.target[1]-=1
+                    case 2:
+                        self.target=[pacman_pos[0]+4, pacman_pos[1]]
+                        while grid[self.target[0]][self.target[1]].is_wall():
+                            self.target[0]-=1                            
+                    case 3:
+                        self.target=[pacman_pos[0], pacman_pos[1]-4]
+                        while grid[self.target[0]][self.target[1]].is_wall():
+                            self.target[1]+=1
 
             case 2:
                 #Frightened
@@ -451,8 +459,6 @@ class Pinky(Ghost):
         global inky
         inky.set_starting(0)
 
-
-
 class Inky(Ghost):
     def __init__(self):
         super().__init__()
@@ -461,7 +467,6 @@ class Inky(Ghost):
         self.starting=-1
         self.direction=0
         self.start_moves=[1,1,0,0,0,3]
-
 
     def display_ghost(self, screen):
         match(self.direction):
@@ -477,20 +482,30 @@ class Inky(Ghost):
         img = pygame.image.load(img).convert()
         screen.blit(img, (self.col*cell_size-8,self.row*cell_size-8))
 
-
-        
-
     def set_target(self):
         global pacman
+        global blinky
         match(self.mode):
             case 0:
                 #Scatter 0,25
                 self.target=[35,27]
             case 1:
                 #Chase
-                #TODO: fai chase
-                if self.target==[self.row,self.col] or self.target==[None,None]:
-                    self.target=pacman.get_position()
+                pacman_pos=pacman.get_position()
+                match(pacman.get_direction()):
+                    case 0:
+                        target=[pacman_pos[0]-2,pacman_pos[1]]
+                    case 1:
+                        target=[pacman_pos[0],pacman_pos[1]+2]
+                    case 2:
+                        target=[pacman_pos[0]+2,pacman_pos[1]]
+                    case 3:
+                        target=[pacman_pos[0],pacman_pos[1]-2]
+
+
+
+                blinky_pos=blinky.get_position()
+                self.target=[target[0]+(target[0]-blinky_pos[0]),target[1]+(target[1]-blinky_pos[1])]
             case 2:
                 #Frightened
                 return
@@ -577,9 +592,19 @@ class Clyde(Ghost):
                 self.target=[35,0]
             case 1:
                 #Chase
-                #TODO: fai chase
-                if self.target==[self.row,self.col] or self.target==[None,None]:
-                    self.target=pacman.get_position()
+                pacman_pos=pacman.get_position()
+
+                point_x= self.col
+                point_y = self.row
+                target_x=pacman_pos[1]
+                target_y=pacman_pos[0]
+
+                dis = math.sqrt(((target_x-point_x)**2)+((target_y-point_y)**2))
+                if dis>8:
+                    self.target=pacman_pos
+                else:
+                    self.target=[35,0]
+
             case 2:
                 #Frightened
                 return
@@ -691,6 +716,9 @@ def init_grid():
     f = open("intersection.txt", "r")
     intersections = ast.literal_eval(f.read())
     f.close()
+    f = open("dots.txt", "r")
+    dots = ast.literal_eval(f.read())
+    f.close()
 
     for row in range (height_in_cell):
         temp=[]
@@ -703,6 +731,8 @@ def init_grid():
                 dot=1
             if [row,col] in intersections:
                 intersection=True
+            if [row,col] in dots:
+                dot=2
             temp.append(Cell(row, col, wall, dot, intersection))
         grid.append(temp)
                 
@@ -786,6 +816,7 @@ font = pygame.font.SysFont('arial', 20)
 
 
 grid=[]
+dots_eaten=0
 pacman = Pacman()
 blinky = Blinky()
 pinky = Pinky()
@@ -799,10 +830,13 @@ display_img()
 draw_dots()
  
 pacman.display_pacman(screen=screen)
+blinky.set_position(4,25)
 blinky.display_ghost(screen=screen)
 pinky.start_procedure()
 inky.start_procedure()
 clyde.start_procedure()
+inky.set_mode(1)
+pinky.set_starting(0)
 # grid[23][4].set_dot(1)
 # grid[23][4].draw_dot(screen)
 # inky.display_ghost(screen=screen)
@@ -828,7 +862,7 @@ while run:
                     pacman.move_pacman(i)
                     break
         if (event.type == GHOSTEVENT):
-            blinky.move_ghost(grid, screen)
+            # blinky.move_ghost(grid, screen)
             pinky.move_ghost(grid, screen)
             inky.move_ghost(grid, screen)
             clyde.move_ghost(grid, screen)

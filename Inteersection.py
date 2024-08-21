@@ -15,7 +15,7 @@ def draw_grid(cell_size):
     for i in range (0,SCREEN_HEIGHT+1,cell_size):
         pygame.draw.line(screen, PINK, (0,i),(SCREEN_WIDTH,i), line_width)
 
-    f = open("intersection.txt", "r")
+    f = open("not_walls.txt", "r")
     walkable = ast.literal_eval(f.read())
     f.close()
 
@@ -47,7 +47,7 @@ def deselect_cell(x,y):
 
 
 def write_on_file():
-    f = open("not_walls.txt", "w")
+    f = open("dots.txt", "w")
     f.write(str(selected_cell))
     f.close()
 
