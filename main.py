@@ -142,6 +142,7 @@ class Cell:
         self.intersection=intersection
         #0 -> no dot, 1 -> dot, 2 -> power pill
         self.dot=dot
+        self.fruit=False
 
     def is_wall(self):
         return self.wall
@@ -151,6 +152,9 @@ class Cell:
     
     def set_dot(self, n):
         self.dot=n
+
+    def set_fruit(self, b):
+        self.fruit=b
 
     def get_dot(self):
         return self.dot
@@ -171,7 +175,21 @@ class Cell:
                 img = pygame.image.load("Fruits\\Food.png").convert()
                 img = pygame.transform.smoothscale(img,(img.get_width()*resize_factor,img.get_height()*resize_factor))
                 screen.blit(img, ( self.col*cell_size+(cell_size-img.get_width())/2, self.row*cell_size+(cell_size-img.get_height())/2 ))
+        if (self.fruit):
+            fruits=[
+            "Fruits\\Cherry.png",
+            "Fruits\\Strawberry.png",
+            "Fruits\\Orange.png",
+            "Fruits\\Apple.png",
+            "Fruits\\Melon.png",
+            "Fruits\\Galaxian.png",
+            "Fruits\\Bell.png",
+            "Fruits\\Key.png",
+            ]
 
+            img = pygame.image.load(fruits[level-1]).convert()
+            img = pygame.transform.smoothscale(img,(img.get_width()*resize_factor,img.get_height()*resize_factor))
+            screen.blit(img, (13*cell_size+(4*resize_factor),20*cell_size-(8*resize_factor)))
 
     # def draw_cell(self, screen):
     #     if self.wall:
@@ -1066,23 +1084,36 @@ def display_bottom_fruit():
         count+=2
     
 def fruit_manager():
-    if dots_eaten==70:
-        fruits=[
-        "Fruits\\Cherry.png",
-        "Fruits\\Strawberry.png",
-        "Fruits\\Orange.png",
-        "Fruits\\Apple.png",
-        "Fruits\\Melon.png",
-        "Fruits\\Galaxian.png",
-        "Fruits\\Bell.png",
-        "Fruits\\Key.png",
-        ]
+    global fruit_time
+    if fruit_time is not None:
+        if pygame.time.get_ticks()-fruit_time>=9000:
+            grid[20][13].set_fruit(False)
+            pygame.draw.rect(screen, BLACK, (13*cell_size+(4*resize_factor),20*cell_size-(8*resize_factor),40*resize_factor,40*resize_factor))
+            grid[20][13].draw_dot(screen)
+            grid[20][14].draw_dot(screen)
 
-        img = pygame.image.load(fruits[i]).convert()
-        img = pygame.transform.smoothscale(img,(img.get_width()*resize_factor,img.get_height()*resize_factor))
-        screen.blit(img, (13*cell_size,34*cell_size+(8*resize_factor)))
-        
-        
+            fruit_time=None
+    if (dots_eaten==7 and fruit_time is None) or (dots_eaten==14 and fruit_time is None):
+        draw_fruit()
+        grid[20][13].set_fruit(True)
+        fruit_time=pygame.time.get_ticks()
+
+def draw_fruit():
+    fruits=[
+    "Fruits\\Cherry.png",
+    "Fruits\\Strawberry.png",
+    "Fruits\\Orange.png",
+    "Fruits\\Apple.png",
+    "Fruits\\Melon.png",
+    "Fruits\\Galaxian.png",
+    "Fruits\\Bell.png",
+    "Fruits\\Key.png",
+    ]
+
+    img = pygame.image.load(fruits[level-1]).convert()
+    img = pygame.transform.smoothscale(img,(img.get_width()*resize_factor,img.get_height()*resize_factor))
+    screen.blit(img, (13*cell_size+(4*resize_factor),20*cell_size-(8*resize_factor)))
+    
 
 
 pygame.init()
@@ -1101,6 +1132,7 @@ mode_length=[7,20,7,20,5,20,5]
 #pos: 0 -> Scatter, 1 -> Chase, 2 -> Frightened
 time_passed=[None,None,None]
 lives=4
+fruit_time=None
 pacman = Pacman()
 blinky = Blinky()
 pinky = Pinky()
@@ -1150,6 +1182,7 @@ while run:
                     pacman.move_pacman(i)
                     check_collision()
                     display_score()
+                    fruit_manager()
                     break
         if (event.type == GHOSTEVENT):
             blinky.move_ghost(grid, screen)
@@ -1157,6 +1190,7 @@ while run:
             inky.move_ghost(grid, screen)
             clyde.move_ghost(grid, screen)
             check_collision()
+            fruit_manager()
             
         if (event.type == TIMEEVENT):
             ghost_mode_manager()
