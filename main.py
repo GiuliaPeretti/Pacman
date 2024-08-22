@@ -1040,24 +1040,47 @@ def display_lives():
         screen.blit(img, ((8-count)*cell_size,34*cell_size+(8*resize_factor)))
         count+=2
 
-def display_fruit():
+def display_bottom_fruit():
     #TODO:The fruit appears after 70 dots are eaten and again after 170 
     # dots are eaten unless the first fruit is still there. They will disappear 
     # if they are not eaten after 9-10 seconds.
+
+
+    #13, 20
     
-    fruits=["Fruits\\Cherry.png",
+    fruits=[
+            "Fruits\\Cherry.png",
             "Fruits\\Strawberry.png",
-            "Fruits\\Apple.png"
-            
-            
+            "Fruits\\Orange.png",
+            "Fruits\\Apple.png",
+            "Fruits\\Melon.png",
+            "Fruits\\Galaxian.png",
+            "Fruits\\Bell.png",
+            "Fruits\\Key.png",
             ]
     count=0
-    for i in range (len(fruits)):
+    for i in range (0, level):
         img = pygame.image.load(fruits[i]).convert()
         img = pygame.transform.smoothscale(img,(img.get_width()*resize_factor,img.get_height()*resize_factor))
-        screen.blit(img, ((count+13)*cell_size+(5*resize_factor),20*cell_size-(5*resize_factor)))
+        screen.blit(img, ((25-count)*cell_size,34*cell_size+(8*resize_factor)))
         count+=2
     
+def fruit_manager():
+    if dots_eaten==70:
+        fruits=[
+        "Fruits\\Cherry.png",
+        "Fruits\\Strawberry.png",
+        "Fruits\\Orange.png",
+        "Fruits\\Apple.png",
+        "Fruits\\Melon.png",
+        "Fruits\\Galaxian.png",
+        "Fruits\\Bell.png",
+        "Fruits\\Key.png",
+        ]
+
+        img = pygame.image.load(fruits[i]).convert()
+        img = pygame.transform.smoothscale(img,(img.get_width()*resize_factor,img.get_height()*resize_factor))
+        screen.blit(img, (13*cell_size,34*cell_size+(8*resize_factor)))
         
         
 
@@ -1091,7 +1114,7 @@ display_img()
 draw_dots()
 display_score()
 display_lives()
-display_fruit()
+display_bottom_fruit()
  
 pacman.display_pacman(screen=screen)
 blinky.display_ghost(screen=screen)
