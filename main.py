@@ -409,7 +409,7 @@ def draw_fruit():
 pygame.init()
 clock=pygame.time.Clock()
 screen = pygame.display.set_mode((SCREEN_WIDTH,SCREEN_HEIGHT), flags, vsync=1)
-pygame.display.set_caption('Tetris♥')
+pygame.display.set_caption('Pacman♥')
 font = pygame.font.SysFont('arial', 20)
 
 

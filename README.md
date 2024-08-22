@@ -2,5 +2,5 @@
 
 The game starts as soon as you run main.py. You can move pacman using the arrow keys
 
-![Alt text]("Images\Img01.PNG")
+![Alt text]("Images\Img.jpg")
 
