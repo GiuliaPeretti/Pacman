@@ -10,6 +10,7 @@ from settings import *
 #TODO: ricontrolla meglio lo sfondo che secondo me hai sbagliato qualcosa
 #TODO: — ghosts can not choose to turn upwards from these tiles.    
 #TODO: controlla durata di Frightened
+#TODO: levels
 
 class Ghost:
     def __init__(self):
@@ -290,7 +291,11 @@ class Pacman:
                 dots_eaten+=1
                 score+=10
             case 2:
-                #TODO: FOOD
+                if time_passed[0] is not None:
+                    time_passed[0]=pygame.time.get_ticks()-time_passed[0]
+                else:
+                    time_passed[1]=pygame.time.get_ticks()-time_passed[1]
+
                 grid[self.row][self.col].set_dot(0)
                 score+=50
                 time_passed[2]=pygame.time.get_ticks()
@@ -343,13 +348,14 @@ class Blinky(Ghost):
         global pacman
         match(self.mode):
             case 0:
+                print("Blinky scatter")
                 #Scatter 0,25
                 self.target=[0,25]
             case 1:
                 #Chase
+                print("Blinky chase")
                 #TODO: quando cambi da qualcosa a chase metti target nella posizione in cui e in quel momento
-                if self.target==[self.row,self.col] or self.target==[None,None]:
-                    self.target=pacman.get_position()
+                self.target=pacman.get_position()
             case 2:
                 #Frightened
                 return
@@ -896,7 +902,6 @@ def display_score():
         imp = pygame.image.load(numbers[int(s[len(s)-1-i])]).convert()
         screen.blit(imp, ((6-i)*cell_size,1*cell_size))
 
-
 def draw_ghost():
     ghosts=[
         "Ghosts\Blinky_up.png",
@@ -935,6 +940,7 @@ def draw_dots():
             cell.draw_dot(screen)
 
 def ghost_mode_manager():
+    #TODO: quando inizia firghtened metti in pausa dove era prima
     global time_passed
     if time_passed[2] is not None and pygame.time.get_ticks()-time_passed[2]>=6000:
         blinky.set_mode(1)
@@ -942,6 +948,31 @@ def ghost_mode_manager():
         inky.set_mode(1)
         clyde.set_mode(1)
         time_passed[2]=None
+        if time_passed[0] is not None:
+            time_passed[0]=pygame.time.get_ticks()-time_passed[0]
+        else:
+            time_passed[1]=pygame.time.get_ticks()-time_passed[1]
+
+    elif time_passed[0] is not None and pygame.time.get_ticks()-time_passed[0]>=mode_length[0]*1000:
+        blinky.set_mode(1)
+        pinky.set_mode(1)
+        inky.set_mode(1)
+        clyde.set_mode(1)
+        time_passed[0]=None
+        time_passed[1]=pygame.time.get_ticks()
+        mode_length.pop(0)
+
+    elif time_passed[1] is not None and pygame.time.get_ticks()-time_passed[1]>=mode_length[0]*1000:
+        blinky.set_mode(0)
+        pinky.set_mode(0)
+        inky.set_mode(0)
+        clyde.set_mode(0)
+        time_passed[1]=None
+        time_passed[0]=pygame.time.get_ticks()
+        mode_length.pop(0)
+
+
+        
 
 
         
@@ -959,6 +990,8 @@ font = pygame.font.SysFont('arial', 20)
 grid=[]
 dots_eaten=0
 score=0
+level=1
+mode_length=[7,20,7,20,5,20,5]
 #pos: 0 -> Scatter, 1 -> Chase, 2 -> Frightened
 time_passed=[None,None,None]
 pacman = Pacman()
@@ -991,6 +1024,7 @@ GHOSTEVENT = pygame.USEREVENT+1
 TIMEEVENT = pygame.USEREVENT+1
 pygame.time.set_timer(event=GHOSTEVENT, millis=500)
 pygame.time.set_timer(event=TIMEEVENT, millis=1000)
+time_passed[0]=pygame.time.get_ticks()
 
 run  = True
 while run:
@@ -1012,8 +1046,10 @@ while run:
             pinky.move_ghost(grid, screen)
             inky.move_ghost(grid, screen)
             clyde.move_ghost(grid, screen)
+            
         if (event.type == TIMEEVENT):
             ghost_mode_manager()
+            print(time_passed)
 
 
     pygame.display.flip()
