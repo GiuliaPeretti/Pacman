@@ -45,26 +45,26 @@ class Ghost:
             case 0: 
                 #UP
                 # if not grid[self.row-1][self.col].is_wall():
-                self.clear_ghost()
+                #self.clear_ghost()
                 self.row=self.row-1
                 self.display_ghost(screen)
                     
             case 1:
                 #RIGHT
                 # if not grid[self.row][self.col+1].is_wall():
-                self.clear_ghost()
+                #self.clear_ghost()
                 self.col=self.col+1
                 self.display_ghost(screen)
             case 2:
                 #DOWN
                 # if not grid[self.row+1][self.col].is_wall():
-                self.clear_ghost()
+                #self.clear_ghost()
                 self.row=self.row+1
                 self.display_ghost(screen)
             case 3:
                 #LEFT
                 # if not grid[self.row][self.col-1].is_wall():
-                self.clear_ghost()
+                #self.clear_ghost()
                 self.col=self.col-1
                 self.display_ghost(screen)
 
@@ -126,7 +126,7 @@ class Ghost:
     def clear_ghost(self):
         color=(0,0,0)
         line_width=1
-        x,y,w,h=self.col*cell_size-8, self.row*cell_size-8, 42,42
+        x,y,w,h=self.col*cell_size-(8*resize_factor), self.row*cell_size-(8*resize_factor), 42*resize_factor,42*resize_factor
         pygame.draw.rect(screen, BLACK, (x,y,w,h))
         grid[self.row][self.col].draw_dot(screen)
         # pygame.draw.line(screen, BLACK, (x,y),(x+cell_size,y), line_width)
@@ -162,14 +162,16 @@ class Cell:
                 # x,y,w,h=self.col*cell_size, self.row*cell_size, cell_size,cell_size
                 # pygame.draw.rect(screen, PINK, (x,y,w,h))
             case 1:
-                x,y,w,h=self.col*cell_size, self.row*cell_size, cell_size,cell_size
+                #TODO: fix this
+                x,y,w,h=self.col*cell_size+2, self.row*cell_size+2, cell_size-4,cell_size-4
                 pygame.draw.rect(screen, BLACK, (x,y,w,h))
                 x,y,w,h=self.col*cell_size+9, self.row*cell_size+9, 6, 6
                 pygame.draw.rect(screen, (205, 150, 140), (x,y,w,h))      
             case 2:
                 img = pygame.image.load("Food.png").convert()
-                screen.blit(img, (self.col*cell_size,self.row*cell_size))
-
+                img = pygame.transform.smoothscale(img,(img.get_width()*resize_factor,img.get_height()*resize_factor))
+                # screen.blit(img, ( self.col*cell_size+(cell_size-img.get_width())/2, self.row*cell_size+(cell_size-img.get_height())/2 ))
+                screen.blit(img, ( self.col*cell_size+2, self.row*cell_size+2 ))
 
 
     # def draw_cell(self, screen):
@@ -218,12 +220,13 @@ class Pacman:
                 img="Pacman\Pacman_left.png"                
 
         img = pygame.image.load(img).convert()
-        screen.blit(img, (self.col*cell_size-8,self.row*cell_size-8))
+        img = pygame.transform.smoothscale(img,(img.get_width()*resize_factor,img.get_height()*resize_factor))
+        screen.blit(img, (self.col*cell_size-(8*resize_factor),self.row*cell_size-(8*resize_factor)))
 
     def clear_pacman(self, screen):
         color=(0,0,0)
         line_width=1
-        x,y,w,h=self.col*cell_size-8, self.row*cell_size-8, 39,39
+        x,y,w,h=self.col*cell_size-(8*resize_factor), self.row*cell_size-(8*resize_factor), 39*resize_factor,39*resize_factor
         pygame.draw.rect(screen, color, (x,y,w,h))
 
     def move_pacman(self, dir):
@@ -347,6 +350,7 @@ class Blinky(Ghost):
                     img="Ghosts\Blinky_left.png"                
 
         img = pygame.image.load(img).convert()
+        img = pygame.transform.smoothscale(img,(img.get_width()*resize_factor,img.get_height()*resize_factor))
         screen.blit(img, (self.col*cell_size-8,self.row*cell_size-8))
 
 
@@ -384,26 +388,26 @@ class Blinky(Ghost):
             case 0: 
                 #UP
                 # if not grid[self.row-1][self.col].is_wall():
-                self.clear_ghost()
+                #self.clear_ghost()
                 self.row=self.row-1
                 self.display_ghost(screen)
                     
             case 1:
                 #RIGHT
                 # if not grid[self.row][self.col+1].is_wall():
-                self.clear_ghost()
+                #self.clear_ghost()
                 self.col=self.col+1
                 self.display_ghost(screen)
             case 2:
                 #DOWN
                 # if not grid[self.row+1][self.col].is_wall():
-                self.clear_ghost()
+                #self.clear_ghost()
                 self.row=self.row+1
                 self.display_ghost(screen)
             case 3:
                 #LEFT
                 # if not grid[self.row][self.col-1].is_wall():
-                self.clear_ghost()
+                #self.clear_ghost()
                 self.col=self.col-1
                 self.display_ghost(screen)
 
@@ -436,6 +440,7 @@ class Pinky(Ghost):
                     img="Ghosts\Pinky_left.png"                
 
         img = pygame.image.load(img).convert()
+        img = pygame.transform.smoothscale(img,(img.get_width()*resize_factor,img.get_height()*resize_factor))
         screen.blit(img, (self.col*cell_size-8,self.row*cell_size-8))
 
     def set_target(self):
@@ -486,6 +491,7 @@ class Pinky(Ghost):
                     case 3:
                         img="Ghosts\Pinky_left.png"   
             img = pygame.image.load(img).convert()
+            img = pygame.transform.smoothscale(img,(img.get_width()*resize_factor,img.get_height()*resize_factor))
             screen.blit(img, (self.col*cell_size-20,self.row*cell_size-8))
             return
 
@@ -529,6 +535,7 @@ class Pinky(Ghost):
                 self.col-=1             
 
         img = pygame.image.load(img).convert()
+        img = pygame.transform.smoothscale(img,(img.get_width()*resize_factor,img.get_height()*resize_factor))
         screen.blit(img, (self.col*cell_size-20,self.row*cell_size-8))
         self.starting+=1
 
@@ -564,6 +571,7 @@ class Inky(Ghost):
                     img="Ghosts\Inky_left.png"                
 
         img = pygame.image.load(img).convert()
+        img = pygame.transform.smoothscale(img,(img.get_width()*resize_factor,img.get_height()*resize_factor))
         screen.blit(img, (self.col*cell_size-8,self.row*cell_size-8))
 
     def set_target(self):
@@ -609,6 +617,7 @@ class Inky(Ghost):
                     case 3:
                         img="Ghosts\Inky_left.png"   
             img = pygame.image.load(img).convert()
+            img = pygame.transform.smoothscale(img,(img.get_width()*resize_factor,img.get_height()*resize_factor))
             screen.blit(img, (self.col*cell_size-20,self.row*cell_size-8))
             return
 
@@ -652,6 +661,7 @@ class Inky(Ghost):
                 self.col-=1             
 
         img = pygame.image.load(img).convert()
+        img = pygame.transform.smoothscale(img,(img.get_width()*resize_factor,img.get_height()*resize_factor))
         screen.blit(img, (self.col*cell_size-20,self.row*cell_size-8))
         self.starting+=1
 
@@ -687,6 +697,7 @@ class Clyde(Ghost):
                     img="Ghosts\Clyde_left.png"                
 
         img = pygame.image.load(img).convert()
+        img = pygame.transform.smoothscale(img,(img.get_width()*resize_factor,img.get_height()*resize_factor))
         screen.blit(img, (self.col*cell_size-8,self.row*cell_size-8))  
 
     def set_target(self):
@@ -729,6 +740,7 @@ class Clyde(Ghost):
                     case 3:
                         img="Ghosts\Clyde_left.png"   
             img = pygame.image.load(img).convert()
+            img = pygame.transform.smoothscale(img,(img.get_width()*resize_factor,img.get_height()*resize_factor))
             screen.blit(img, (self.col*cell_size-20,self.row*cell_size-8))
             return
 
@@ -771,6 +783,7 @@ class Clyde(Ghost):
                 self.col-=1             
 
         img = pygame.image.load(img).convert()
+        img = pygame.transform.smoothscale(img,(img.get_width()*resize_factor,img.get_height()*resize_factor))
         screen.blit(img, (self.col*cell_size-20,self.row*cell_size-8))
         self.starting+=1
 
@@ -881,12 +894,12 @@ def display_img():
     #     "GamesImages\\bottom_to_left2.png",
     # ]
 
-    imp = pygame.image.load("Background.png").convert()
-    imp = pygame.transform.rotozoom(imp,0,resize_factor)
-    screen.blit(imp, (0,0))
-    imp = pygame.image.load("High_score.png").convert()
-    imp = pygame.transform.rotozoom(imp,0,resize_factor)
-    screen.blit(imp, (9*cell_size,2))
+    img = pygame.image.load("Background.png").convert()
+    img = pygame.transform.smoothscale(img,(SCREEN_WIDTH,SCREEN_HEIGHT))
+    screen.blit(img, (0,0))
+    img = pygame.image.load("High_score.png").convert()
+    img = pygame.transform.smoothscale(img,(img.get_width()*resize_factor,img.get_height()*resize_factor))
+    screen.blit(img, (9*cell_size,2))
 
 def display_numbers():
     images=[
@@ -903,8 +916,9 @@ def display_numbers():
     ]
 
     for i in range(len(images)):
-        imp = pygame.image.load(images[i]).convert()
-        screen.blit(imp, (i*cell_size,2*cell_size))
+        img = pygame.image.load(images[i]).convert()
+        img = pygame.transform.smoothscale(img,(img.get_width()*resize_factor,img.get_height()*resize_factor))
+        screen.blit(img, (i*cell_size,2*cell_size))
 
 def display_score():
     numbers=[
@@ -922,8 +936,9 @@ def display_score():
 
     s=str(score)
     for i in range(0, len(s)):
-        imp = pygame.image.load(numbers[int(s[len(s)-1-i])]).convert()
-        screen.blit(imp, ((6-i)*cell_size,1*cell_size))
+        img = pygame.image.load(numbers[int(s[len(s)-1-i])]).convert()
+        img = pygame.transform.smoothscale(img,(img.get_width()*resize_factor,img.get_height()*resize_factor))
+        screen.blit(img, ((6-i)*cell_size,1*cell_size))
 
 def draw_ghost():
     ghosts=[
@@ -954,8 +969,9 @@ def draw_ghost():
         if (i==8):
             count1+=2
             count=2
-        imp = pygame.image.load(ghosts[i]).convert()
-        screen.blit(imp, (count*cell_size-10,count1*cell_size-10))
+        img = pygame.image.load(ghosts[i]).convert()
+        img = pygame.transform.smoothscale(img,(img.get_width()*resize_factor,img.get_height()*resize_factor))
+        screen.blit(img, (count*cell_size-10,count1*cell_size-10))
 
 def draw_dots():
     for row in grid:
@@ -1013,7 +1029,21 @@ def check_collision():
             pacman.set_position(26,14)
             pacman.display_pacman(screen)
 
-
+def draw_everything():
+    global pacman
+    global blinky
+    global pinky
+    global inky
+    global clyde
+    display_img()
+    display_score()
+    draw_dots()
+    pacman.display_pacman(screen)
+    blinky.display_ghost(screen)
+    pinky.display_ghost(screen)
+    inky.display_ghost(screen)
+    clyde.display_ghost(screen)
+    
         
         
 

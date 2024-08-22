@@ -10,8 +10,7 @@ SCREEN_HEIGHT=648
 cell_size=SCREEN_HEIGHT//height_in_cell
 SCREEN_WIDTH=cell_size*width_in_cell
 
-resize_factor=cell_size//24
-
+resize_factor=cell_size/24
 
 
 
