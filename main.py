@@ -168,7 +168,7 @@ class Cell:
                 x,y,w,h=self.col*cell_size+(9*resize_factor), self.row*cell_size+(9*resize_factor), 6*resize_factor, 6*resize_factor
                 pygame.draw.rect(screen, (205, 150, 140), (x,y,w,h))      
             case 2:
-                img = pygame.image.load("Food.png").convert()
+                img = pygame.image.load("Fruits\\Food.png").convert()
                 img = pygame.transform.smoothscale(img,(img.get_width()*resize_factor,img.get_height()*resize_factor))
                 screen.blit(img, ( self.col*cell_size+(cell_size-img.get_width())/2, self.row*cell_size+(cell_size-img.get_height())/2 ))
 
@@ -1040,8 +1040,23 @@ def display_lives():
         screen.blit(img, ((8-count)*cell_size,34*cell_size+(8*resize_factor)))
         count+=2
 
-
+def display_fruit():
+    #TODO:The fruit appears after 70 dots are eaten and again after 170 
+    # dots are eaten unless the first fruit is still there. They will disappear 
+    # if they are not eaten after 9-10 seconds.
     
+    fruits=["Fruits\\Cherry.png",
+            "Fruits\\Strawberry.png",
+            "Fruits\\Apple.png"
+            
+            
+            ]
+    count=0
+    for i in range (len(fruits)):
+        img = pygame.image.load(fruits[i]).convert()
+        img = pygame.transform.smoothscale(img,(img.get_width()*resize_factor,img.get_height()*resize_factor))
+        screen.blit(img, ((count+13)*cell_size+(5*resize_factor),20*cell_size-(5*resize_factor)))
+        count+=2
     
         
         
@@ -1076,6 +1091,7 @@ display_img()
 draw_dots()
 display_score()
 display_lives()
+display_fruit()
  
 pacman.display_pacman(screen=screen)
 blinky.display_ghost(screen=screen)
