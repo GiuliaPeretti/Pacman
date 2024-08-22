@@ -10,7 +10,6 @@ from settings import *
 #TODO: ricontrolla meglio lo sfondo che secondo me hai sbagliato qualcosa
 #TODO: — ghosts can not choose to turn upwards from these tiles.    
 #TODO: controlla durata di Frightened
-#TODO: levels
 
 class Ghost:
     def __init__(self):
@@ -20,6 +19,7 @@ class Ghost:
         self.direction=0
         self.starting=0
         self.target=[None,None]
+        self.special_intersection= [ [14, 12], [14, 15], [26, 12], [26, 15] ]
 
     def get_position(self):
         return [self.row,self.col]
@@ -118,6 +118,9 @@ class Ghost:
             case 3:
                 if (1 in valids):
                     valids.remove(1)
+        if [self.row,self.col] in self.special_intersection:
+            if 0 in valids:
+                valids.remove(0)
         return valids
 
     def clear_ghost(self):
@@ -198,6 +201,10 @@ class Pacman:
     
     def get_direction(self):
         return self.direction
+    
+    def set_position(self, row, col):
+        self.row=row
+        self.col=col
     
     def display_pacman(self, screen):
         match(self.direction):
@@ -348,12 +355,10 @@ class Blinky(Ghost):
         global pacman
         match(self.mode):
             case 0:
-                print("Blinky scatter")
                 #Scatter 0,25
                 self.target=[0,25]
             case 1:
                 #Chase
-                print("Blinky chase")
                 #TODO: quando cambi da qualcosa a chase metti target nella posizione in cui e in quel momento
                 self.target=pacman.get_position()
             case 2:
@@ -953,26 +958,41 @@ def ghost_mode_manager():
         else:
             time_passed[1]=pygame.time.get_ticks()-time_passed[1]
 
-    elif time_passed[0] is not None and pygame.time.get_ticks()-time_passed[0]>=mode_length[0]*1000:
-        blinky.set_mode(1)
-        pinky.set_mode(1)
-        inky.set_mode(1)
-        clyde.set_mode(1)
-        time_passed[0]=None
-        time_passed[1]=pygame.time.get_ticks()
-        mode_length.pop(0)
+    if len(mode_length)!=0:
+        if time_passed[0] is not None and pygame.time.get_ticks()-time_passed[0]>=mode_length[0]*1000:
+            blinky.set_mode(1)
+            pinky.set_mode(1)
+            inky.set_mode(1)
+            clyde.set_mode(1)
+            time_passed[0]=None
+            time_passed[1]=pygame.time.get_ticks()
+            mode_length.pop(0)
 
-    elif time_passed[1] is not None and pygame.time.get_ticks()-time_passed[1]>=mode_length[0]*1000:
-        blinky.set_mode(0)
-        pinky.set_mode(0)
-        inky.set_mode(0)
-        clyde.set_mode(0)
-        time_passed[1]=None
-        time_passed[0]=pygame.time.get_ticks()
-        mode_length.pop(0)
+        elif time_passed[1] is not None and pygame.time.get_ticks()-time_passed[1]>=mode_length[0]*1000:
+            blinky.set_mode(0)
+            pinky.set_mode(0)
+            inky.set_mode(0)
+            clyde.set_mode(0)
+            time_passed[1]=None
+            time_passed[0]=pygame.time.get_ticks()
+            mode_length.pop(0)
 
+def check_collision():
+    global pacman 
+    global blinky
+    global pinky
+    global inky
+    global clyde
 
-        
+    ghosts_pos=[blinky.get_position(), pinky.get_position(), inky.get_position(), clyde.get_position()]
+    if pacman.get_position() in ghosts_pos:
+        if time_passed[2] is not None:
+            ghosts=[blinky,pinky,inky,clyde]
+            ghosts[ghosts_pos.index(pacman.get_position())].set_pos(0)
+            ghosts[ghosts_pos.index(pacman.get_position())].set_starting(0)
+        else:
+            pacman.set_position(26,14)
+            pacman.display_pacman(screen)
 
 
         
@@ -1039,6 +1059,7 @@ while run:
             for i in range(len(INPUTS)):
                 if (event.key==INPUTS[i]):
                     pacman.move_pacman(i)
+                    check_collision()
                     display_score()
                     break
         if (event.type == GHOSTEVENT):
@@ -1046,10 +1067,10 @@ while run:
             pinky.move_ghost(grid, screen)
             inky.move_ghost(grid, screen)
             clyde.move_ghost(grid, screen)
+            check_collision()
             
         if (event.type == TIMEEVENT):
             ghost_mode_manager()
-            print(time_passed)
 
 
     pygame.display.flip()
