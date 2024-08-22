@@ -318,6 +318,10 @@ class Blinky(Ghost):
         self.row=14
         self.col=13
         self.start_moves=[3]
+    
+    def set_starting_pos(self):
+        self.row=14
+        self.col=13
 
     def display_ghost(self, screen):
         # color=(255,0,0)
@@ -411,6 +415,10 @@ class Pinky(Ghost):
         self.starting=-1
         self.direction=2
         self.start_moves=[0,0,0,3]
+
+    def set_starting_pos(self):
+        self.row=17
+        self.col=14
 
 
     def display_ghost(self, screen):
@@ -537,6 +545,10 @@ class Inky(Ghost):
         self.direction=0
         self.start_moves=[1,1,0,0,0,3]
 
+    def set_starting_pos(self):
+        self.row=17
+        self.col=12
+
     def display_ghost(self, screen):
         if (self.mode==2):
             img="Ghosts\Frightened.png"
@@ -655,6 +667,10 @@ class Clyde(Ghost):
         self.starting=-1
         self.direction=0
         self.start_moves=[3,3,0,0,0,3]
+
+    def set_starting_pos(self):
+        self.row=17
+        self.col=16
 
     def display_ghost(self, screen):
         if (self.mode==2):
@@ -866,8 +882,10 @@ def display_img():
     # ]
 
     imp = pygame.image.load("Background.png").convert()
+    imp = pygame.transform.rotozoom(imp,0,resize_factor)
     screen.blit(imp, (0,0))
     imp = pygame.image.load("High_score.png").convert()
+    imp = pygame.transform.rotozoom(imp,0,resize_factor)
     screen.blit(imp, (9*cell_size,2))
 
 def display_numbers():
@@ -909,25 +927,25 @@ def display_score():
 
 def draw_ghost():
     ghosts=[
-        "Ghosts\Blinky_up.png",
-        "Ghosts\Blinky_down.png",
-        "Ghosts\Blinky_right.png",
-        "Ghosts\Blinky_left.png",
+        "Ghosts\\Blinky_up.png",
+        "Ghosts\\Blinky_down.png",
+        "Ghosts\\Blinky_right.png",
+        "Ghosts\\Blinky_left.png",
 
-        "Ghosts\Pinky_up.png",
-        "Ghosts\Pinky_down.png",
-        "Ghosts\Pinky_right.png",
-        "Ghosts\Pinky_left.png",
+        "Ghosts\\Pinky_up.png",
+        "Ghosts\\Pinky_down.png",
+        "Ghosts\\Pinky_right.png",
+        "Ghosts\\Pinky_left.png",
 
-        "Ghosts\Inky_up.png",
-        "Ghosts\Inky_down.png",
-        "Ghosts\Inky_right.png",
-        "Ghosts\Inky_left.png",
+        "Ghosts\\Inky_up.png",
+        "Ghosts\\Inky_down.png",
+        "Ghosts\\Inky_right.png",
+        "Ghosts\\Inky_left.png",
 
-        "Ghosts\Clyde_up.png",
-        "Ghosts\Clyde_down.png",
-        "Ghosts\Clyde_right.png",
-        "Ghosts\Clyde_left.png",        
+        "Ghosts\\Clyde_up.png",
+        "Ghosts\\Clyde_down.png",
+        "Ghosts\\Clyde_right.png",
+        "Ghosts\\Clyde_left.png",        
     ]
     count=0
     count1=16
@@ -987,8 +1005,9 @@ def check_collision():
     ghosts_pos=[blinky.get_position(), pinky.get_position(), inky.get_position(), clyde.get_position()]
     if pacman.get_position() in ghosts_pos:
         if time_passed[2] is not None:
+            #TODO: testa che ci sono un bel po di problemi
             ghosts=[blinky,pinky,inky,clyde]
-            ghosts[ghosts_pos.index(pacman.get_position())].set_pos(0)
+            ghosts[ghosts_pos.index(pacman.get_position())].set_starting_pos()
             ghosts[ghosts_pos.index(pacman.get_position())].set_starting(0)
         else:
             pacman.set_position(26,14)
