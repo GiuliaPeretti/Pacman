@@ -7,6 +7,7 @@ height_in_cell=36
 # SCREEN_WIDTH=cell_size*width_in_cell
 
 SCREEN_HEIGHT=648
+# SCREEN_HEIGHT=24*36
 cell_size=SCREEN_HEIGHT//height_in_cell
 SCREEN_WIDTH=cell_size*width_in_cell
 
