@@ -335,6 +335,7 @@ def check_collision():
     global inky
     global clyde
     global lives
+    global game_over
 
     ghosts_pos=[blinky.get_position(), pinky.get_position(), inky.get_position(), clyde.get_position()]
     if pacman.get_position() in ghosts_pos:
@@ -350,6 +351,14 @@ def check_collision():
             display_lives()
             if lives==0:
                 display_game_over()
+                pacman.clear_pacman(screen)
+                game_over=True
+                blinky.clear_ghost(screen, grid, level)
+                pinky.clear_ghost(screen, grid, level)
+                inky.clear_ghost(screen, grid, level)
+                clyde.clear_ghost(screen, grid, level)
+
+
 
 def display_lives():
     count=0
@@ -481,6 +490,7 @@ mode_length=[7,20,7,20,5,20,5]
 time_passed=[None,None,None]
 lives=4
 fruit_time=None
+game_over=False
 pacman = Pacman()
 blinky = Blinky(pacman)
 pinky = Pinky(pacman)
@@ -528,7 +538,7 @@ while run:
         if event.type == pygame.MOUSEBUTTONDOWN:
             x,y=pygame.mouse.get_pos()
             print(y//cell_size, x//cell_size)             
-        if (event.type == pygame.KEYDOWN):
+        if (event.type == pygame.KEYDOWN and not game_over):
             for i in range(len(INPUTS)):
                 if (event.key==INPUTS[i]):
                     pacman.move_pacman(i, grid, screen)
@@ -537,20 +547,18 @@ while run:
                     fruit_manager()
                     check_dots_eaten()
                     break
-        if (event.type == GHOSTEVENT):
-            print(dots_eaten)
+        if (event.type == GHOSTEVENT and not game_over):
             blinky.move_ghost(grid, screen, level)
-            print("Blinky: ", blinky.get_mode())
             pinky.move_ghost(grid, screen, level)
             inky.move_ghost(grid, screen, level)
             clyde.move_ghost(grid, screen, level)
             check_collision()
             fruit_manager()
             
-        if (event.type == TIMEEVENT):
+        if (event.type == TIMEEVENT and not game_over):
             ghost_mode_manager()
 
-        if (event.type == PACMANEVENT):
+        if (event.type == PACMANEVENT and not game_over):
             pacman.move_pacman(pacman.get_direction(), grid, screen)
             check_collision()
             display_score()
