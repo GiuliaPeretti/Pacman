@@ -168,9 +168,14 @@ def init_grid():
     f = open("intersection.txt", "r")
     intersections = ast.literal_eval(f.read())
     f.close()
+    f = open("power_pill.txt", "r")
+    power_pill = ast.literal_eval(f.read())
+    f.close()
     f = open("dots.txt", "r")
     dots = ast.literal_eval(f.read())
     f.close()
+
+
 
     for row in range (height_in_cell):
         temp=[]
@@ -180,16 +185,16 @@ def init_grid():
             intersection=False
             if [row,col] in walkable:
                 wall=False
-                dot=1
             if [row,col] in intersections:
                 intersection=True
             if [row,col] in dots:
+                dot=1
+            if [row,col] in power_pill:
                 dot=2
+
             temp.append(Cell(row, col, wall, dot, intersection))
         grid.append(temp)
-    for i in range (0,6):
-        grid[17][i].set_dot(0)
-        grid[17][len(grid[0])-i-1].set_dot(0)
+
                 
 # def draw_cells():
 #     global grid
@@ -474,6 +479,7 @@ def display_game_over():
     screen.blit(img, (9*cell_size,20*cell_size))
 
 
+#TODO: finisci qua
 def level_cleared():
     global blinky
     global pinky
@@ -489,7 +495,10 @@ def level_cleared():
     inky.set_starting()
     clyde.set_starting()
 
-
+def display_ready():
+    img = pygame.image.load("Ready.png").convert()
+    img = pygame.transform.smoothscale(img,(img.get_width()*resize_factor,img.get_height()*resize_factor))
+    screen.blit(img, (11*cell_size,20*cell_size))
 
 
 
@@ -516,6 +525,7 @@ time_passed=[None,None,None]
 lives=1
 fruit_time=None
 game_over=False
+ready=True
 pacman = Pacman()
 blinky = Blinky(pacman)
 pinky = Pinky(pacman)
@@ -530,6 +540,7 @@ draw_dots()
 display_score()
 display_lives()
 display_bottom_fruit()
+display_ready()
 # display_game_over()
  
 pacman.display_pacman(screen=screen)
@@ -566,26 +577,28 @@ while run:
         if (event.type == pygame.KEYDOWN and not game_over):
             for i in range(len(INPUTS)):
                 if (event.key==INPUTS[i]):
+                    if ready:
+                        ready = False
+
+
                     pacman.move_pacman(i, grid, screen)
                     check_collision()
                     display_score()
                     fruit_manager()
                     check_dots_eaten()
                     break
-        if (event.type == GHOSTEVENT and not game_over):
-            print(dots_eaten)
+        if (event.type == GHOSTEVENT and not game_over and not ready):
             blinky.move_ghost(grid, screen, level)
-            print("Blinky: ", blinky.get_mode())
             pinky.move_ghost(grid, screen, level)
             inky.move_ghost(grid, screen, level)
             clyde.move_ghost(grid, screen, level)
             check_collision()
             fruit_manager()
             
-        if (event.type == TIMEEVENT and not game_over):
+        if (event.type == TIMEEVENT and not game_over and not ready):
             ghost_mode_manager()
 
-        if (event.type == PACMANEVENT and not game_over):
+        if (event.type == PACMANEVENT and not game_over and not ready):
             pacman.move_pacman(pacman.get_direction(), grid, screen)
             check_collision()
             display_score()

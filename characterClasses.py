@@ -336,7 +336,7 @@ class Pinky(Ghost):
         self.ghost_id=2
 
     def set_starting_pos(self):
-        self.starting=0
+        self.starting=-1
         self.row=17
         self.col=14
 
@@ -462,7 +462,7 @@ class Inky(Ghost):
         self.blinky=blinky
 
     def set_starting_pos(self):
-        self.starting=0
+        self.starting=-1
         self.row=17
         self.col=12
 
@@ -596,7 +596,7 @@ class Clyde(Ghost):
         self.ghost_id=4
 
     def set_starting_pos(self):
-        self.starting=0
+        self.starting=-1
         self.row=17
         self.col=16
 
