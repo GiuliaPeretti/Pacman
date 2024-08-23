@@ -19,6 +19,10 @@ class Pacman:
         self.row=row
         self.col=col
     
+    def set_starting_pos(self):
+        self.row=26
+        self.col=14
+    
     def display_pacman(self, screen):
         match(self.direction):
             case 0:
@@ -242,7 +246,7 @@ class Blinky(Ghost):
         self.ghost_id=1
     
     def set_starting_pos(self):
-        self.starting=0
+        self.starting=-1
         self.row=14
         self.col=13
 
@@ -291,7 +295,6 @@ class Blinky(Ghost):
                 return
 
     def start_procedure(self, grid, screen, level):
-
         dir=self.start_moves[0]
         self.starting+=1
         

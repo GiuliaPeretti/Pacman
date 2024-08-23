@@ -358,12 +358,12 @@ def check_collision():
             lives-=1
             display_lives()
             if lives==0:
-                display_game_over()
                 blinky.clear_ghost(screen, grid, level)
                 pinky.clear_ghost(screen, grid, level)
                 inky.clear_ghost(screen, grid, level)
                 clyde.clear_ghost(screen, grid, level)
                 game_over=True
+                display_game_over()
                 if grid[20][13].get_fruit():
                     grid[20][13].draw_dot(screen, level)
 
@@ -453,7 +453,6 @@ def check_dots_eaten():
             dots_eaten+=1
             grid[pacman_pos[0]][pacman_pos[1]].set_dot(0)
         case 2:
-            dots_eaten+=1
             grid[pacman_pos[0]][pacman_pos[1]].set_dot(0)
             if time_passed[0] is not None:
                 time_passed[0]=pygame.time.get_ticks()-time_passed[0]
@@ -470,7 +469,7 @@ def check_dots_eaten():
         inky.dot_limit_passed()
     elif (dots_eaten==60 and level==1) or (dots_eaten==50 and level==2):
         clyde.dot_limit_passed()
-    if dots_eaten==10:
+    if dots_eaten==24:
         level_cleared()
 
 def display_game_over():
@@ -485,22 +484,43 @@ def level_cleared():
     global pinky
     global inky
     global clyde
+    global pacman
     global level
+    global ready
 
 
     #TODO: animation
     level+=1
-    blinky.set_starting()
-    pinky.set_starting()
-    inky.set_starting()
-    clyde.set_starting()
+    init_grid()
+    ready=True
+
+    pacman.set_starting_pos()
+
+    ghosts=[blinky, pinky, inky, clyde]
+
+
+    display_img()
+    draw_dots()
+    display_score()
+    display_lives()
+    display_bottom_fruit()
+    display_ready()
+    pacman.display_pacman(screen)
+    #TODO: qando chiami start_procedure su blinky si muove
+    for g in ghosts:
+        g.clear_ghost(screen, grid, level)
+        g.set_starting_pos()
+        g.start_procedure(grid, screen, level)
+
+
 
 def display_ready():
     img = pygame.image.load("Ready.png").convert()
     img = pygame.transform.smoothscale(img,(img.get_width()*resize_factor,img.get_height()*resize_factor))
     screen.blit(img, (11*cell_size,20*cell_size))
 
-
+def clear_ready():
+    pygame.draw.rect(screen, BLACK, (11*cell_size,20*cell_size, 144*resize_factor, 24*resize_factor))
 
 
 
@@ -579,6 +599,7 @@ while run:
                 if (event.key==INPUTS[i]):
                     if ready:
                         ready = False
+                        clear_ready()
 
 
                     pacman.move_pacman(i, grid, screen)
