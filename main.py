@@ -294,7 +294,6 @@ def draw_dots():
             cell.draw_dot(screen, level)
 
 def ghost_mode_manager():
-    #TODO: quando inizia firghtened metti in pausa dove era prima
     global time_passed
     if time_passed[2] is not None and pygame.time.get_ticks()-time_passed[2]>=6000:
         blinky.set_mode(1)
@@ -433,14 +432,12 @@ def check_dots_eaten():
             dots_eaten+=1
             grid[pacman_pos[0]][pacman_pos[1]].set_dot(0)
         case 2:
-            score+=10
             grid[pacman_pos[0]][pacman_pos[1]].set_dot(0)
             if time_passed[0] is not None:
                 time_passed[0]=pygame.time.get_ticks()-time_passed[0]
             else:
                 time_passed[1]=pygame.time.get_ticks()-time_passed[1]
 
-            grid[pacman_pos[0]][pacman_pos[1]].set_dot(0)
             score+=50
             time_passed[2]=pygame.time.get_ticks()
             blinky.set_mode(2)
@@ -506,9 +503,11 @@ clyde.start_procedure(grid, screen, level)
 #TODO: gestisci lo start dei fantasmi qua
 
 GHOSTEVENT = pygame.USEREVENT+1
-TIMEEVENT = pygame.USEREVENT+1
+TIMEEVENT = pygame.USEREVENT+2
+PACMANEVENT = pygame.USEREVENT+3
 pygame.time.set_timer(event=GHOSTEVENT, millis=500)
 pygame.time.set_timer(event=TIMEEVENT, millis=1000)
+# pygame.time.set_timer(event=PACMANEVENT, millis=500)
 time_passed[0]=pygame.time.get_ticks()
 
 run  = True
@@ -540,6 +539,13 @@ while run:
             
         if (event.type == TIMEEVENT):
             ghost_mode_manager()
+
+        if (event.type == PACMANEVENT):
+            pacman.move_pacman(pacman.get_direction(), grid, screen)
+            check_collision()
+            display_score()
+            fruit_manager()
+            check_dots_eaten()
 
 
     pygame.display.flip()
