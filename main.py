@@ -419,6 +419,7 @@ def check_dots_eaten():
     global pacman
     global dots_eaten
     global score
+    global level
     global blinky
     global pinky
     global inky
@@ -446,39 +447,14 @@ def check_dots_eaten():
             pinky.set_mode(2)
             inky.set_mode(2)
             clyde.set_mode(2)
+    if dots_eaten==30 and level==1:
+        inky.dot_limit_passed()
+    elif (dots_eaten==60 and level==1) or (dots_eaten==50 and level==2):
+        clyde.dot_limit_passed()
 
 
 
-# TODO:  prota in main
-    # def check_dot(self, grid):
-    #     global dots_eaten
-    #     global score
-    #     global blinky
-    #     global pinky
-    #     global inky
-    #     global clyde
-    #     global time_passed
 
-    #     match(grid[self.row][self.col].get_dot()):
-    #         case 0:
-    #             return
-    #         case 1:
-    #             grid[self.row][self.col].set_dot(0)
-    #             dots_eaten+=1
-    #             score+=10
-    #         case 2:
-    #             if time_passed[0] is not None:
-    #                 time_passed[0]=pygame.time.get_ticks()-time_passed[0]
-    #             else:
-    #                 time_passed[1]=pygame.time.get_ticks()-time_passed[1]
-
-    #             grid[self.row][self.col].set_dot(0)
-    #             score+=50
-    #             time_passed[2]=pygame.time.get_ticks()
-    #             blinky.set_mode(2)
-    #             pinky.set_mode(2)
-    #             inky.set_mode(2)
-    #             clyde.set_mode(2)
 
 
 
@@ -503,8 +479,8 @@ fruit_time=None
 pacman = Pacman()
 blinky = Blinky(pacman)
 pinky = Pinky(pacman)
-inky = Inky(pacman, dots_eaten, blinky)
-clyde = Clyde(pacman, dots_eaten)
+inky = Inky(pacman, blinky)
+clyde = Clyde(pacman)
 
 init_grid()
 draw_background()
@@ -554,6 +530,7 @@ while run:
                     check_dots_eaten()
                     break
         if (event.type == GHOSTEVENT):
+            print(dots_eaten)
             blinky.move_ghost(grid, screen, level)
             pinky.move_ghost(grid, screen, level)
             inky.move_ghost(grid, screen, level)

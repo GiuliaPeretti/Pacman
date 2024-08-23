@@ -315,6 +315,7 @@ class Blinky(Ghost):
                 self.clear_ghost(screen, grid, level)
                 self.col=self.col-1
                 self.display_ghost(screen)
+        grid[self.row][self.col].set_ghost(self.ghost_id)
 
 class Pinky(Ghost):
     def __init__(self, pacman):
@@ -385,6 +386,8 @@ class Pinky(Ghost):
        
     def start_procedure(self, grid, screen, level):
         if self.starting==-1:
+            if grid[14][12].get_ghost()==1:
+                self.starting=0
             if (self.mode==2):
                     img="Ghosts\Frightened.png"
             else: 
@@ -400,13 +403,14 @@ class Pinky(Ghost):
             img = pygame.image.load(img).convert()
             img = pygame.transform.smoothscale(img,(img.get_width()*resize_factor,img.get_height()*resize_factor))
             screen.blit(img, (self.col*cell_size-(20*resize_factor),self.row*cell_size-(8*resize_factor)))
+            grid[self.row][self.col].set_ghost(self.ghost_id)
             return
 
 
         self.direction=self.start_moves[self.starting]
         x,y,w,h=self.col*cell_size-(20*resize_factor), self.row*cell_size-(8*resize_factor), 42*resize_factor,42*resize_factor
         pygame.draw.rect(screen, BLACK, (x,y,w,h))
-        grid[self.row][self.col].draw_dot(screen)
+        grid[self.row][self.col].draw_dot(screen, level)
 
         match(self.direction):
             case 0:
@@ -437,21 +441,21 @@ class Pinky(Ghost):
         img = pygame.image.load(img).convert()
         img = pygame.transform.smoothscale(img,(img.get_width()*resize_factor,img.get_height()*resize_factor))
         screen.blit(img, (self.col*cell_size-(20*resize_factor),self.row*cell_size-(8*resize_factor)))
+        grid[self.row][self.col].set_ghost(self.ghost_id)
         self.starting+=1
 
 
 class Inky(Ghost):
-    def __init__(self,pacman,dots_eaten,blinky):
+    def __init__(self,pacman,blinky):
         super().__init__()
         self.row=17
         self.col=12
-        self.starting=-1
+        self.starting=-2
         self.direction=0
         self.start_moves=[1,1,0,0,0,3]
         self.pacman=pacman
-        self.dots_eaten=dots_eaten
-        self.dot_limit=30
         self.ghost_id=3
+        self.blinky=blinky
 
     def set_starting_pos(self):
         self.row=17
@@ -502,8 +506,10 @@ class Inky(Ghost):
                 return
 
     def start_procedure(self, grid, screen,level):
-        if self.starting==-1:
-            if grid[14][14].get_ghost()==2:
+        if level>1 and self.starting==-2:
+            self.starting=-1
+        if self.starting<=-1:
+            if self.starting==-1 and grid[14][14].get_ghost()==2:
                 self.starting=0
             if (self.mode==2):
                 img="Ghosts\Frightened.png"
@@ -520,13 +526,14 @@ class Inky(Ghost):
             img = pygame.image.load(img).convert()
             img = pygame.transform.smoothscale(img,(img.get_width()*resize_factor,img.get_height()*resize_factor))
             screen.blit(img, (self.col*cell_size-(20*resize_factor),self.row*cell_size-(8*resize_factor)))
+            grid[self.row][self.col].set_ghost(self.ghost_id)
             return
 
 
         self.direction=self.start_moves[self.starting]
         x,y,w,h=self.col*cell_size-(20*resize_factor), self.row*cell_size-(8*resize_factor), 42*resize_factor,42*resize_factor
         pygame.draw.rect(screen, BLACK, (x,y,w,h))
-        grid[self.row][self.col].draw_dot(screen)
+        grid[self.row][self.col].draw_dot(screen, level)
 
         match(self.direction):
             case 0:
@@ -557,21 +564,23 @@ class Inky(Ghost):
         img = pygame.image.load(img).convert()
         img = pygame.transform.smoothscale(img,(img.get_width()*resize_factor,img.get_height()*resize_factor))
         screen.blit(img, (self.col*cell_size-(20*resize_factor),self.row*cell_size-(8*resize_factor)))
+        grid[self.row][self.col].set_ghost(self.ghost_id)
         self.starting+=1
 
+    def dot_limit_passed(self):
+        if self.starting==-2:
+            self.starting=-1
 
 
 class Clyde(Ghost):
-    def __init__(self, pacman, dots_eaten):
+    def __init__(self, pacman):
         super().__init__()
         self.row=17
         self.col=16
-        self.starting=-1
+        self.starting=-2
         self.direction=0
         self.start_moves=[3,3,0,0,0,3]
         self.pacman=pacman
-        self.dots_eaten=dots_eaten
-        self.dot_limit=60
         self.ghost_id=4
 
     def set_starting_pos(self):
@@ -622,7 +631,12 @@ class Clyde(Ghost):
                 return
 
     def start_procedure(self, grid, screen, level):
-        if self.starting==-1:
+
+        if level>2 and self.starting==-2:
+            self.starting=-1
+        if self.starting<=-1:
+            if self.starting==-1 and grid[14][14].get_ghost()==3:
+                self.starting=0
             if (self.mode==2):
                 img="Ghosts\Frightened.png"
             else:        
@@ -638,13 +652,14 @@ class Clyde(Ghost):
             img = pygame.image.load(img).convert()
             img = pygame.transform.smoothscale(img,(img.get_width()*resize_factor,img.get_height()*resize_factor))
             screen.blit(img, (self.col*cell_size-(20*resize_factor),self.row*cell_size-(8*resize_factor)))
+            grid[self.row][self.col].set_ghost(self.ghost_id)
             return
 
 
         self.direction=self.start_moves[self.starting]
         x,y,w,h=self.col*cell_size-(20*resize_factor), self.row*cell_size-(8*resize_factor), 42*resize_factor,42*resize_factor
         pygame.draw.rect(screen, BLACK, (x,y,w,h))
-        grid[self.row][self.col].draw_dot(screen)
+        grid[self.row][self.col].draw_dot(screen, level)
 
         match(self.direction):
             case 0:
@@ -675,4 +690,9 @@ class Clyde(Ghost):
         img = pygame.image.load(img).convert()
         img = pygame.transform.smoothscale(img,(img.get_width()*resize_factor,img.get_height()*resize_factor))
         screen.blit(img, (self.col*cell_size-(20*resize_factor),self.row*cell_size-(8*resize_factor)))
+        grid[self.row][self.col].set_ghost(self.ghost_id)
         self.starting+=1
+
+    def dot_limit_passed(self):
+        if self.starting==-2:
+            self.starting=-1
