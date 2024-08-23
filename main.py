@@ -5,6 +5,7 @@ import ast
 import math
 from settings import *
 from characterClasses import *
+from Spriets import *
 
 #TODO: A ghost in Frightened mode also turns dark blue, moves much more slowly and can be eaten by Pac-Man
 #TODO: implementa livelli
@@ -498,25 +499,27 @@ inky = Inky(pacman, blinky)
 clyde = Clyde(pacman)
 
 init_grid()
-draw_background()
-write_number()
-display_img()
-draw_dots()
-display_score()
-display_lives()
-display_bottom_fruit()
+# draw_background()
+# write_number()
+# display_img()
+# draw_dots()
+# display_score()
+# display_lives()
+# display_bottom_fruit()
 # display_game_over()
  
-pacman.display_pacman(screen=screen)
-blinky.display_ghost(screen=screen)
-pinky.start_procedure(grid, screen, level)
-inky.start_procedure(grid, screen, level)
-clyde.start_procedure(grid, screen, level)
+# pacman.display_pacman(screen=screen)
+# blinky.display_ghost(screen=screen)
+# pinky.start_procedure(grid, screen, level)
+# inky.start_procedure(grid, screen, level)
+# clyde.start_procedure(grid, screen, level)
 
-# grid[23][4].set_dot(1)
-# grid[23][4].draw_dot(screen)
-# inky.display_ghost(screen=screen)
-# clyde.display_ghost(screen=screen)
+
+background = BackgroundSprite()
+pacmanSprite = PacmanSprite()
+game_group = pygame.sprite.Group()
+game_group.add(background)
+game_group.add(pacmanSprite)
 
 # draw_grid(cell_size)
 #TODO: gestisci lo start dei fantasmi qua
@@ -542,16 +545,17 @@ while run:
             for i in range(len(INPUTS)):
                 if (event.key==INPUTS[i]):
                     pacman.move_pacman(i, grid, screen)
+                    pacmanSprite.change_pos(pacman.get_position())
                     check_collision()
                     display_score()
                     fruit_manager()
                     check_dots_eaten()
                     break
         if (event.type == GHOSTEVENT and not game_over):
-            blinky.move_ghost(grid, screen, level)
-            pinky.move_ghost(grid, screen, level)
-            inky.move_ghost(grid, screen, level)
-            clyde.move_ghost(grid, screen, level)
+            # blinky.move_ghost(grid, screen, level)
+            # pinky.move_ghost(grid, screen, level)
+            # inky.move_ghost(grid, screen, level)
+            # clyde.move_ghost(grid, screen, level)
             check_collision()
             fruit_manager()
             
@@ -565,6 +569,9 @@ while run:
             fruit_manager()
             check_dots_eaten()
 
+    # screen.blit(pygame.image.load("Background.png"), (0,0))
+    game_group.draw(screen)
+    game_group.update()
 
     pygame.display.flip()
     clock.tick(30)

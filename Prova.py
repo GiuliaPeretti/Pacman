@@ -16,9 +16,10 @@ class PacmanSprite(pygame.sprite.Sprite):
         img = pygame.image.load("Pacman\\Pacman_left.png")
         self.image = pygame.transform.rotozoom(img, 0, resize_factor)
         self.rect = self.image.get_rect()
-        self.rect.center= [26*cell_size, 14*cell_size]
+        self.rect.center= [14*cell_size+12*resize_factor, 26*cell_size+12*resize_factor]
 
-
+    def change_pos(self,row, col):
+        self.rect.center= [col*cell_size+12*resize_factor, row*cell_size+12*resize_factor]
 
 
 pygame.init()
@@ -33,8 +34,7 @@ game_group = pygame.sprite.Group()
 game_group.add(background)
 game_group.add(pacmanSprite)
 
-
-
+pacmanSprite.change_pos(23,11)
 
 
 run  = True

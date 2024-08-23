@@ -45,49 +45,49 @@ class Pacman:
             case 0: 
                 #UP
                 if self.row-1!=-1 and not grid[self.row-1][self.col].is_wall():
-                    self.clear_pacman(screen)
+                    # self.clear_pacman(screen)
                     self.row=self.row-1
                     self.direction=0
-                    self.display_pacman(screen)
+                    # self.display_pacman(screen)
                     
                     
             case 1:
                 #RIGHT
                 if self.col+1==len(grid[0]) and self.row==17:
-                    self.clear_pacman(screen)
+                    # self.clear_pacman(screen)
                     self.col=0
                     self.direction=1
-                    self.display_pacman(screen)
+                    # self.display_pacman(screen)
                       
-                    return             
 
                 if self.col+1!=len(grid[0]) and not grid[self.row][self.col+1].is_wall():
-                    self.clear_pacman(screen)
+                    # self.clear_pacman(screen)
                     self.col=self.col+1
                     self.direction=1
-                    self.display_pacman(screen)
+                    # self.display_pacman(screen)
+                
                     
             case 2:
                 #DOWN
                 if self.row+1!=len(grid) and not grid[self.row+1][self.col].is_wall():
-                    self.clear_pacman(screen)
+                    # self.clear_pacman(screen)
                     self.row=self.row+1
                     self.direction=2
-                    self.display_pacman(screen)
+                    # self.display_pacman(screen)
             case 3:
                 #LEFT
                 if self.col-1==-1 and self.row==17:
-                    self.clear_pacman(screen)
+                    # self.clear_pacman(screen)
                     self.col=27   
                     self.direction=3  
-                    self.display_pacman(screen)
+                    # self.display_pacman(screen)
                     return
                 
                 if self.col-1!=-1 and not grid[self.row][self.col-1].is_wall():
-                    self.clear_pacman(screen)
+                    # self.clear_pacman(screen)
                     self.col=self.col-1
                     self.direction=3
-                    self.display_pacman(screen)
+                    # self.display_pacman(screen)
 
 
 
