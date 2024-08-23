@@ -109,7 +109,7 @@ class Ghost:
         return self.mode
 
     def get_position(self):
-        return [self.row,self.col]
+        return [self.row, self.col]
 
     def set_starting(self, n):
         self.starting=n
@@ -214,7 +214,10 @@ class Ghost:
     def clear_ghost(self, screen, grid, level):
         color=(0,0,0)
         line_width=1
-        x,y,w,h=self.col*cell_size-(8*resize_factor), self.row*cell_size-(8*resize_factor), 42*resize_factor,42*resize_factor
+        if (self.starting<len(self.start_moves)):
+            x,y,w,h=self.col*cell_size-(20*resize_factor), self.row*cell_size-(8*resize_factor), 42*resize_factor,42*resize_factor
+        else:
+            x,y,w,h=self.col*cell_size-(8*resize_factor), self.row*cell_size-(8*resize_factor), 42*resize_factor,42*resize_factor
         pygame.draw.rect(screen, BLACK, (x,y,w,h))
         grid[self.row][self.col].draw_dot(screen, level)
         grid[self.row][self.col].set_ghost(0)

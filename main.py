@@ -48,6 +48,9 @@ class Cell:
     def get_dot(self):
         return self.dot
     
+    def get_fruit(self):
+        return self.fruit
+    
     def draw_dot(self, screen, level):
         match(self.dot):
             case 0:
@@ -330,6 +333,7 @@ def ghost_mode_manager():
 
 def check_collision():
     global pacman 
+    global game_over
     global blinky
     global pinky
     global inky
@@ -350,6 +354,13 @@ def check_collision():
             display_lives()
             if lives==0:
                 display_game_over()
+                blinky.clear_ghost(screen, grid, level)
+                pinky.clear_ghost(screen, grid, level)
+                inky.clear_ghost(screen, grid, level)
+                clyde.clear_ghost(screen, grid, level)
+                game_over=True
+                if grid[20][13].get_fruit():
+                    grid[20][13].draw_dot(screen, level)
 
 def display_lives():
     count=0
@@ -396,7 +407,7 @@ def fruit_manager():
             grid[20][14].draw_dot(screen, level)
 
             fruit_time=None
-    if (dots_eaten==7 and fruit_time is None) or (dots_eaten==14 and fruit_time is None):
+    if (dots_eaten==70 and fruit_time is None) or (dots_eaten==140 and fruit_time is None):
         
         grid[20][13].set_fruit(True)
         grid[20][14].set_fruit(True)
@@ -437,6 +448,7 @@ def check_dots_eaten():
             dots_eaten+=1
             grid[pacman_pos[0]][pacman_pos[1]].set_dot(0)
         case 2:
+            dots_eaten+=1
             grid[pacman_pos[0]][pacman_pos[1]].set_dot(0)
             if time_passed[0] is not None:
                 time_passed[0]=pygame.time.get_ticks()-time_passed[0]
@@ -453,11 +465,33 @@ def check_dots_eaten():
         inky.dot_limit_passed()
     elif (dots_eaten==60 and level==1) or (dots_eaten==50 and level==2):
         clyde.dot_limit_passed()
+    if dots_eaten==10:
+        level_cleared()
 
 def display_game_over():
     img = pygame.image.load("Game_over.png").convert()
     img = pygame.transform.smoothscale(img,(img.get_width()*resize_factor,img.get_height()*resize_factor))
     screen.blit(img, (9*cell_size,20*cell_size))
+
+
+def level_cleared():
+    global blinky
+    global pinky
+    global inky
+    global clyde
+    global level
+
+
+    #TODO: animation
+    level+=1
+    blinky.set_starting()
+    pinky.set_starting()
+    inky.set_starting()
+    clyde.set_starting()
+
+
+
+
 
 
 
@@ -479,8 +513,9 @@ level=1
 mode_length=[7,20,7,20,5,20,5]
 #pos: 0 -> Scatter, 1 -> Chase, 2 -> Frightened
 time_passed=[None,None,None]
-lives=4
+lives=1
 fruit_time=None
+game_over=False
 pacman = Pacman()
 blinky = Blinky(pacman)
 pinky = Pinky(pacman)
@@ -528,7 +563,7 @@ while run:
         if event.type == pygame.MOUSEBUTTONDOWN:
             x,y=pygame.mouse.get_pos()
             print(y//cell_size, x//cell_size)             
-        if (event.type == pygame.KEYDOWN):
+        if (event.type == pygame.KEYDOWN and not game_over):
             for i in range(len(INPUTS)):
                 if (event.key==INPUTS[i]):
                     pacman.move_pacman(i, grid, screen)
@@ -537,7 +572,7 @@ while run:
                     fruit_manager()
                     check_dots_eaten()
                     break
-        if (event.type == GHOSTEVENT):
+        if (event.type == GHOSTEVENT and not game_over):
             print(dots_eaten)
             blinky.move_ghost(grid, screen, level)
             print("Blinky: ", blinky.get_mode())
@@ -547,10 +582,10 @@ while run:
             check_collision()
             fruit_manager()
             
-        if (event.type == TIMEEVENT):
+        if (event.type == TIMEEVENT and not game_over):
             ghost_mode_manager()
 
-        if (event.type == PACMANEVENT):
+        if (event.type == PACMANEVENT and not game_over):
             pacman.move_pacman(pacman.get_direction(), grid, screen)
             check_collision()
             display_score()
