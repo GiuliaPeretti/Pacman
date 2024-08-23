@@ -105,6 +105,9 @@ class Ghost:
         self.target=[None,None]
         self.special_intersection= [ [14, 12], [14, 15], [26, 12], [26, 15] ]
 
+    def get_mode(self):
+        return self.mode
+
     def get_position(self):
         return [self.row,self.col]
 

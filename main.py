@@ -184,6 +184,9 @@ def init_grid():
                 dot=2
             temp.append(Cell(row, col, wall, dot, intersection))
         grid.append(temp)
+    for i in range (0,6):
+        grid[17][i].set_dot(0)
+        grid[17][len(grid[0])-i-1].set_dot(0)
                 
 # def draw_cells():
 #     global grid
@@ -345,6 +348,8 @@ def check_collision():
             pacman.display_pacman(screen)
             lives-=1
             display_lives()
+            if lives==0:
+                display_game_over()
 
 def display_lives():
     count=0
@@ -449,7 +454,10 @@ def check_dots_eaten():
     elif (dots_eaten==60 and level==1) or (dots_eaten==50 and level==2):
         clyde.dot_limit_passed()
 
-
+def display_game_over():
+    img = pygame.image.load("Game_over.png").convert()
+    img = pygame.transform.smoothscale(img,(img.get_width()*resize_factor,img.get_height()*resize_factor))
+    screen.blit(img, (9*cell_size,20*cell_size))
 
 
 
@@ -487,6 +495,7 @@ draw_dots()
 display_score()
 display_lives()
 display_bottom_fruit()
+# display_game_over()
  
 pacman.display_pacman(screen=screen)
 blinky.display_ghost(screen=screen)
@@ -531,6 +540,7 @@ while run:
         if (event.type == GHOSTEVENT):
             print(dots_eaten)
             blinky.move_ghost(grid, screen, level)
+            print("Blinky: ", blinky.get_mode())
             pinky.move_ghost(grid, screen, level)
             inky.move_ghost(grid, screen, level)
             clyde.move_ghost(grid, screen, level)
