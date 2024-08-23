@@ -3,130 +3,6 @@ import random
 import math
 from settings import *
 
-class Ghost:
-    def __init__(self):
-        #0 -> Scatter, 1 -> Chase, 2 -> Frightened
-        self.mode=0
-        #0 -> Up, 1 -> Right, 2 -> Down, 3 -> Left
-        self.direction=0
-        self.starting=0
-        self.target=[None,None]
-        self.special_intersection= [ [14, 12], [14, 15], [26, 12], [26, 15] ]
-
-    def get_position(self):
-        return [self.row,self.col]
-
-    def set_starting(self, n):
-        self.starting=n
-
-    def set_mode(self, n):
-        self.mode=n
-
-    def set_position(self, row, col):
-        self.row=row
-        self.col=col
-
-    def move_ghost(self, grid, screen, level):
-        if self.starting<len(self.start_moves):
-            self.start_procedure(grid, screen, level)
-            return
-
-        dir = self.chose_direction(grid)
-        self.direction=dir
-        match(dir):
-            case 0: 
-                #UP
-                # if not grid[self.row-1][self.col].is_wall():
-                self.clear_ghost(screen, grid, level)
-                self.row=self.row-1
-                self.display_ghost(screen)
-                    
-            case 1:
-                #RIGHT
-                # if not grid[self.row][self.col+1].is_wall():
-                self.clear_ghost(screen, grid, level)
-                self.col=self.col+1
-                self.display_ghost(screen)
-            case 2:
-                #DOWN
-                # if not grid[self.row+1][self.col].is_wall():
-                self.clear_ghost(screen, grid, level)
-                self.row=self.row+1
-                self.display_ghost(screen)
-            case 3:
-                #LEFT
-                # if not grid[self.row][self.col-1].is_wall():
-                self.clear_ghost(screen, grid, level)
-                self.col=self.col-1
-                self.display_ghost(screen)
-
-    def chose_direction(self, grid):
-
-
-        if self.mode==2:
-            valids=self.get_valid_dir(grid)
-            return random.choice(valids)
-
-        
-        # if grid[self.row][self.col].is_intersection() or self.starting==4:
-        self.set_target(grid)
-
-        min=1000
-        valids=self.get_valid_dir(grid)
-        possible_dir=[[-1,0], [0,+1], [+1,0], [0,-1]]
-        selected_dir=-1
-        for i in valids:
-            point_x= self.col+possible_dir[i][1]
-            point_y = self.row+possible_dir[i][0]
-            target_x=self.target[1]
-            target_y=self.target[0]
-
-            dis = math.sqrt(((target_x-point_x)**2)+((target_y-point_y)**2))
-            # dis = math.sqrt(((target[0]-self.row+possible_dir[i][0])**2)+((target[1]-self.col+possible_dir[i][1])**2))
-            
-            if min > dis:
-                min = dis
-                selected_dir=i
-        return selected_dir                
-        
-    def get_valid_dir(self, grid):
-        valids=[]
-        possible_dir=[[-1,0], [0,+1], [+1,0], [0,-1]]
-        for i in range (len(possible_dir)):
-            row = self.row+possible_dir[i][0]
-            col = self.col+possible_dir[i][1]
-            if not grid[self.row+possible_dir[i][0]][self.col+possible_dir[i][1]].is_wall():
-                valids.append(i)
-        match (self.direction):
-            case 0:
-                if (2 in valids):
-                    valids.remove(2)
-            case 1:
-                if (3 in valids):
-                    valids.remove(3)
-            case 2:
-                if (0 in valids):
-                    valids.remove(0)
-            case 3:
-                if (1 in valids):
-                    valids.remove(1)
-        if [self.row,self.col] in self.special_intersection:
-            if 0 in valids:
-                valids.remove(0)
-        return valids
-
-    def clear_ghost(self, screen, grid, level):
-        color=(0,0,0)
-        line_width=1
-        x,y,w,h=self.col*cell_size-(8*resize_factor), self.row*cell_size-(8*resize_factor), 42*resize_factor,42*resize_factor
-        pygame.draw.rect(screen, BLACK, (x,y,w,h))
-        grid[self.row][self.col].draw_dot(screen, level)
-        # pygame.draw.line(screen, BLACK, (x,y),(x+cell_size,y), line_width)
-        # pygame.draw.line(screen, BLACK, (x+cell_size,y),(x+cell_size,y+cell_size), line_width)
-        # pygame.draw.line(screen, BLACK, (x,y+cell_size),(x+cell_size,y+cell_size), line_width)
-        # pygame.draw.line(screen, BLACK, (x,y),(x,y+cell_size), line_width)
-
-
 class Pacman:
     def __init__(self):
         self.row=26
@@ -214,36 +90,140 @@ class Pacman:
                     self.display_pacman(screen)
 
 
-    # TODO:  prota in main
-    # def check_dot(self, grid):
-    #     global dots_eaten
-    #     global score
-    #     global blinky
-    #     global pinky
-    #     global inky
-    #     global clyde
-    #     global time_passed
 
-    #     match(grid[self.row][self.col].get_dot()):
-    #         case 0:
-    #             return
-    #         case 1:
-    #             grid[self.row][self.col].set_dot(0)
-    #             dots_eaten+=1
-    #             score+=10
-    #         case 2:
-    #             if time_passed[0] is not None:
-    #                 time_passed[0]=pygame.time.get_ticks()-time_passed[0]
-    #             else:
-    #                 time_passed[1]=pygame.time.get_ticks()-time_passed[1]
 
-    #             grid[self.row][self.col].set_dot(0)
-    #             score+=50
-    #             time_passed[2]=pygame.time.get_ticks()
-    #             blinky.set_mode(2)
-    #             pinky.set_mode(2)
-    #             inky.set_mode(2)
-    #             clyde.set_mode(2)
+
+
+
+class Ghost:
+    def __init__(self):
+        #0 -> Scatter, 1 -> Chase, 2 -> Frightened
+        self.mode=0
+        #0 -> Up, 1 -> Right, 2 -> Down, 3 -> Left
+        self.direction=0
+        self.starting=0
+        self.target=[None,None]
+        self.special_intersection= [ [14, 12], [14, 15], [26, 12], [26, 15] ]
+
+    def get_position(self):
+        return [self.row,self.col]
+
+    def set_starting(self, n):
+        self.starting=n
+
+    def set_mode(self, n):
+        self.mode=n
+
+    def set_position(self, row, col):
+        self.row=row
+        self.col=col
+
+    def move_ghost(self, grid, screen, level):
+        if self.starting<len(self.start_moves):
+            self.start_procedure(grid, screen, level)
+            return
+
+        dir = self.chose_direction(grid)
+        self.direction=dir
+        match(dir):
+            case 0: 
+                #UP
+                # if not grid[self.row-1][self.col].is_wall():
+                self.clear_ghost(screen, grid, level)
+                self.row=self.row-1
+                self.display_ghost(screen)
+                    
+            case 1:
+                #RIGHT
+                # if not grid[self.row][self.col+1].is_wall():
+                self.clear_ghost(screen, grid, level)
+                self.col=self.col+1
+                self.display_ghost(screen)
+            case 2:
+                #DOWN
+                # if not grid[self.row+1][self.col].is_wall():
+                self.clear_ghost(screen, grid, level)
+                self.row=self.row+1
+                self.display_ghost(screen)
+            case 3:
+                #LEFT
+                # if not grid[self.row][self.col-1].is_wall():
+                self.clear_ghost(screen, grid, level)
+                self.col=self.col-1
+                self.display_ghost(screen)
+        grid[self.row][self.col].set_ghost(self.ghost_id)
+
+    def chose_direction(self, grid):
+
+
+        if self.mode==2:
+            valids=self.get_valid_dir(grid)
+            return random.choice(valids)
+
+        
+        # if grid[self.row][self.col].is_intersection() or self.starting==4:
+        self.set_target(grid)
+
+        min=1000
+        valids=self.get_valid_dir(grid)
+        possible_dir=[[-1,0], [0,+1], [+1,0], [0,-1]]
+        selected_dir=-1
+        for i in valids:
+            point_x= self.col+possible_dir[i][1]
+            point_y = self.row+possible_dir[i][0]
+            target_x=self.target[1]
+            target_y=self.target[0]
+
+            dis = math.sqrt(((target_x-point_x)**2)+((target_y-point_y)**2))
+            # dis = math.sqrt(((target[0]-self.row+possible_dir[i][0])**2)+((target[1]-self.col+possible_dir[i][1])**2))
+            
+            if min > dis:
+                min = dis
+                selected_dir=i
+        return selected_dir                
+        
+    def get_valid_dir(self, grid):
+        valids=[]
+        possible_dir=[[-1,0], [0,+1], [+1,0], [0,-1]]
+        for i in range (len(possible_dir)):
+            row = self.row+possible_dir[i][0]
+            col = self.col+possible_dir[i][1]
+            if not grid[self.row+possible_dir[i][0]][self.col+possible_dir[i][1]].is_wall():
+                valids.append(i)
+        match (self.direction):
+            case 0:
+                if (2 in valids):
+                    valids.remove(2)
+            case 1:
+                if (3 in valids):
+                    valids.remove(3)
+            case 2:
+                if (0 in valids):
+                    valids.remove(0)
+            case 3:
+                if (1 in valids):
+                    valids.remove(1)
+        if [self.row,self.col] in self.special_intersection:
+            if 0 in valids:
+                valids.remove(0)
+        return valids
+
+    def clear_ghost(self, screen, grid, level):
+        color=(0,0,0)
+        line_width=1
+        x,y,w,h=self.col*cell_size-(8*resize_factor), self.row*cell_size-(8*resize_factor), 42*resize_factor,42*resize_factor
+        pygame.draw.rect(screen, BLACK, (x,y,w,h))
+        grid[self.row][self.col].draw_dot(screen, level)
+        grid[self.row][self.col].set_ghost(0)
+        # pygame.draw.line(screen, BLACK, (x,y),(x+cell_size,y), line_width)
+        # pygame.draw.line(screen, BLACK, (x+cell_size,y),(x+cell_size,y+cell_size), line_width)
+        # pygame.draw.line(screen, BLACK, (x,y+cell_size),(x+cell_size,y+cell_size), line_width)
+        # pygame.draw.line(screen, BLACK, (x,y),(x,y+cell_size), line_width)
+
+
+
+
+    
 
 class Blinky(Ghost):
     def __init__(self, pacman):
@@ -253,6 +233,7 @@ class Blinky(Ghost):
         self.col=13
         self.start_moves=[3]
         self.pacman=pacman
+        self.ghost_id=1
     
     def set_starting_pos(self):
         self.row=14
@@ -344,6 +325,7 @@ class Pinky(Ghost):
         self.direction=2
         self.start_moves=[0,0,0,3]
         self.pacman=pacman
+        self.ghost_id=2
 
     def set_starting_pos(self):
         self.row=17
@@ -459,7 +441,7 @@ class Pinky(Ghost):
 
 
 class Inky(Ghost):
-    def __init__(self,pacman, blinky):
+    def __init__(self,pacman,dots_eaten,blinky):
         super().__init__()
         self.row=17
         self.col=12
@@ -467,6 +449,9 @@ class Inky(Ghost):
         self.direction=0
         self.start_moves=[1,1,0,0,0,3]
         self.pacman=pacman
+        self.dots_eaten=dots_eaten
+        self.dot_limit=30
+        self.ghost_id=3
 
     def set_starting_pos(self):
         self.row=17
@@ -518,6 +503,8 @@ class Inky(Ghost):
 
     def start_procedure(self, grid, screen,level):
         if self.starting==-1:
+            if grid[14][14].get_ghost()==2:
+                self.starting=0
             if (self.mode==2):
                 img="Ghosts\Frightened.png"
             else:      
@@ -575,7 +562,7 @@ class Inky(Ghost):
 
 
 class Clyde(Ghost):
-    def __init__(self, pacman):
+    def __init__(self, pacman, dots_eaten):
         super().__init__()
         self.row=17
         self.col=16
@@ -583,6 +570,9 @@ class Clyde(Ghost):
         self.direction=0
         self.start_moves=[3,3,0,0,0,3]
         self.pacman=pacman
+        self.dots_eaten=dots_eaten
+        self.dot_limit=60
+        self.ghost_id=4
 
     def set_starting_pos(self):
         self.row=17

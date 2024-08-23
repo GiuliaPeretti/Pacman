@@ -11,6 +11,9 @@ from characterClasses import *
 #TODO: ricontrolla meglio lo sfondo che secondo me hai sbagliato qualcosa
 #TODO: — ghosts can not choose to turn upwards from these tiles.    
 #TODO: controlla durata di Frightened
+#TODO: Allinizio pacman e un cerchio al centro
+
+
 
 class Cell:
     def __init__(self, row: int, col: int, wall: bool, dot: int, intersection: bool) -> None:
@@ -21,6 +24,8 @@ class Cell:
         #0 -> no dot, 1 -> dot, 2 -> power pill
         self.dot=dot
         self.fruit=False
+        #0 -> no ghost, 1 -> blinky, 2 -> pinky, 3 -> inky, 4 -> clyde
+        self.ghost=0
 
     def is_wall(self):
         return self.wall
@@ -33,6 +38,12 @@ class Cell:
 
     def set_fruit(self, b):
         self.fruit=b
+    
+    def set_ghost(self, n):
+        self.ghost=n
+
+    def get_ghost(self):
+        return self.ghost
 
     def get_dot(self):
         return self.dot
@@ -377,15 +388,15 @@ def fruit_manager():
             grid[20][13].set_fruit(False)
             grid[20][14].set_fruit(False)
             pygame.draw.rect(screen, BLACK, (13*cell_size+(4*resize_factor),20*cell_size-(8*resize_factor),40*resize_factor,40*resize_factor))
-            grid[20][13].draw_dot(screen)
-            grid[20][14].draw_dot(screen)
+            grid[20][13].draw_dot(screen, level)
+            grid[20][14].draw_dot(screen, level)
 
             fruit_time=None
     if (dots_eaten==7 and fruit_time is None) or (dots_eaten==14 and fruit_time is None):
         
         grid[20][13].set_fruit(True)
         grid[20][14].set_fruit(True)
-        grid[20][13].draw_dot(screen)
+        grid[20][13].draw_dot(screen, level)
         fruit_time=pygame.time.get_ticks()
 
 def draw_fruit():
@@ -403,7 +414,73 @@ def draw_fruit():
     img = pygame.image.load(fruits[level-1]).convert()
     img = pygame.transform.smoothscale(img,(img.get_width()*resize_factor,img.get_height()*resize_factor))
     screen.blit(img, (13*cell_size+(4*resize_factor),20*cell_size-(8*resize_factor)))
-    
+
+def check_dots_eaten():
+    global pacman
+    global dots_eaten
+    global score
+    global blinky
+    global pinky
+    global inky
+    global clyde
+    pacman_pos=pacman.get_position()
+    match (grid[pacman_pos[0]][pacman_pos[1]].get_dot()):
+        case 0:
+            return
+        case 1:
+            score+=10
+            dots_eaten+=1
+            grid[pacman_pos[0]][pacman_pos[1]].set_dot(0)
+        case 2:
+            score+=10
+            grid[pacman_pos[0]][pacman_pos[1]].set_dot(0)
+            if time_passed[0] is not None:
+                time_passed[0]=pygame.time.get_ticks()-time_passed[0]
+            else:
+                time_passed[1]=pygame.time.get_ticks()-time_passed[1]
+
+            grid[pacman_pos[0]][pacman_pos[1]].set_dot(0)
+            score+=50
+            time_passed[2]=pygame.time.get_ticks()
+            blinky.set_mode(2)
+            pinky.set_mode(2)
+            inky.set_mode(2)
+            clyde.set_mode(2)
+
+
+
+# TODO:  prota in main
+    # def check_dot(self, grid):
+    #     global dots_eaten
+    #     global score
+    #     global blinky
+    #     global pinky
+    #     global inky
+    #     global clyde
+    #     global time_passed
+
+    #     match(grid[self.row][self.col].get_dot()):
+    #         case 0:
+    #             return
+    #         case 1:
+    #             grid[self.row][self.col].set_dot(0)
+    #             dots_eaten+=1
+    #             score+=10
+    #         case 2:
+    #             if time_passed[0] is not None:
+    #                 time_passed[0]=pygame.time.get_ticks()-time_passed[0]
+    #             else:
+    #                 time_passed[1]=pygame.time.get_ticks()-time_passed[1]
+
+    #             grid[self.row][self.col].set_dot(0)
+    #             score+=50
+    #             time_passed[2]=pygame.time.get_ticks()
+    #             blinky.set_mode(2)
+    #             pinky.set_mode(2)
+    #             inky.set_mode(2)
+    #             clyde.set_mode(2)
+
+
 
 
 pygame.init()
@@ -426,8 +503,8 @@ fruit_time=None
 pacman = Pacman()
 blinky = Blinky(pacman)
 pinky = Pinky(pacman)
-inky = Inky(pacman, blinky)
-clyde = Clyde(pacman)
+inky = Inky(pacman, dots_eaten, blinky)
+clyde = Clyde(pacman, dots_eaten)
 
 init_grid()
 draw_background()
@@ -474,6 +551,7 @@ while run:
                     check_collision()
                     display_score()
                     fruit_manager()
+                    check_dots_eaten()
                     break
         if (event.type == GHOSTEVENT):
             blinky.move_ghost(grid, screen, level)
