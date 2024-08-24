@@ -4,6 +4,21 @@ import pygame
 from pygame.sprite import Group
 from settings import *
 
+
+class AnimationSprite(pygame.sprite.Sprite):
+    def __init__(self):
+        super().__init__()
+        self.image = pygame.image.load("Background.png")
+        self.image = pygame.transform.rotozoom(self.image, 0, resize_factor)
+        self.rect = self.image.get_rect()
+    def update(self, n):
+        if n%2==0:
+            self.image = pygame.image.load("Background.png")
+            self.image = pygame.transform.rotozoom(self.image, 0, resize_factor)
+        else: 
+            self.image = pygame.image.load("Background_white.png")
+            self.image = pygame.transform.rotozoom(self.image, 0, resize_factor)
+
 class BackgroundSprite(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
@@ -73,11 +88,11 @@ class PacmanSprite(pygame.sprite.Sprite):
         match(self.pacman.get_direction()):
             case 0:
                 img= pygame.image.load("Pacman\\Pacman_up.png")                
-            case 1:\
+            case 1:
                 img= pygame.image.load("Pacman\\Pacman_right.png")                
-            case 2:\
+            case 2:
                 img= pygame.image.load("Pacman\\Pacman_down.png")                
-            case 3:\
+            case 3:
                 img= pygame.image.load("Pacman\\Pacman_left.png")
         self.image = pygame.transform.rotozoom(img, 0, resize_factor)
 
@@ -92,7 +107,7 @@ class BlinkySprite(pygame.sprite.Sprite):
     def update(self):
         pos = self.blinky.get_position()
 
-        if self.blinky.get_mode==2:
+        if self.blinky.get_mode()==2:
             img= pygame.image.load("Ghosts\\Frightened.png")  
         else:
             match(self.blinky.direction):
@@ -127,7 +142,7 @@ class PinkySprite(pygame.sprite.Sprite):
     def update(self):
         pos = self.pinky.get_position()
 
-        if self.pinky.get_mode==2:
+        if self.pinky.get_mode()==2:
             img= pygame.image.load("Ghosts\\Frightened.png")  
         else:
             match(self.pinky.direction):
@@ -163,7 +178,7 @@ class InkySprite(pygame.sprite.Sprite):
     def update(self):
         pos = self.inky.get_position()
 
-        if self.inky.get_mode==2:
+        if self.inky.get_mode()==2:
             img= pygame.image.load("Ghosts\\Frightened.png")  
         else:
             match(self.inky.direction):
@@ -199,7 +214,7 @@ class ClydeSprite(pygame.sprite.Sprite):
     def update(self):
         pos = self.clyde.get_position()
 
-        if self.clyde.get_mode==2:
+        if self.clyde.get_mode()==2:
             img= pygame.image.load("Ghosts\\Frightened.png")  
         else:
             match(self.clyde.direction):

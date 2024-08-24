@@ -201,7 +201,7 @@ def init_grid():
 #         for col in range (len(grid[0])):
 #             grid[row][col].draw_cell(screen)
 
-def display_img():
+def display_background():
     # images=[
     #     "GamesImages\\bottom_to_right.png",
     #     "GamesImages\\bottom_to_left.png",
@@ -441,6 +441,7 @@ def check_dots_eaten():
     global pinky
     global inky
     global clyde
+    global animation
     pacman_pos=pacman.get_position()
     match (grid[pacman_pos[0]][pacman_pos[1]].get_dot()):
         case 0:
@@ -462,17 +463,56 @@ def check_dots_eaten():
             pinky.set_mode(2)
             inky.set_mode(2)
             clyde.set_mode(2)
-    if dots_eaten==30 and level==1:
+    if (dots_eaten>=30 and level==1) or level>1:
         inky.dot_limit_passed()
-    elif (dots_eaten==60 and level==1) or (dots_eaten==50 and level==2):
+    elif (dots_eaten>=60 and level==1) or (dots_eaten>=50 and level==2) or level>2:
         clyde.dot_limit_passed()
+    if dots_eaten==240:
+        animation=0
 
 def display_game_over():
     img = pygame.image.load("Game_over.png").convert()
     img = pygame.transform.smoothscale(img,(img.get_width()*resize_factor,img.get_height()*resize_factor))
     screen.blit(img, (9*cell_size,20*cell_size))
 
+def level_cleared():
+    global blinky
+    global pinky
+    global inky
+    global clyde
+    global pacman
+    global level
+    global ready
 
+
+    #TODO: animation
+    level+=1
+    init_grid()
+    ready=True
+
+    pacman.set_starting_pos()
+
+    ghosts=[blinky, pinky, inky, clyde]
+
+
+    display_background()
+    draw_dots()
+    display_score()
+    display_lives()
+    display_bottom_fruit()
+    # display_ready()
+    #TODO: qando chiami start_procedure su blinky si muove
+    for g in ghosts:
+        g.set_starting_pos()
+
+
+def display_ready():
+    img = pygame.image.load("Ready.png").convert()
+    img = pygame.transform.smoothscale(img,(img.get_width()*resize_factor,img.get_height()*resize_factor))
+    screen.blit(img, (11*cell_size,20*cell_size))
+
+def clear_ready():
+    pygame.draw.rect(screen, BLACK, (11*cell_size,20*cell_size, 144*resize_factor, 24*resize_factor))
 
 
 
@@ -495,6 +535,7 @@ time_passed=[None,None,None]
 lives=4
 fruit_time=None
 game_over=False
+animation=-1
 pacman = Pacman()
 blinky = Blinky(pacman)
 pinky = Pinky(pacman)
@@ -504,7 +545,7 @@ clyde = Clyde(pacman)
 init_grid()
 # draw_background()
 # write_number()
-# display_img()
+# display_background()
 # draw_dots()
 # display_score()
 # display_lives()
@@ -540,15 +581,26 @@ game_group.add(pinkySprite)
 game_group.add(inkySprite)
 game_group.add(clydeSprite)
 
+
+level_cleared_animation = pygame.sprite.Group()
+animationSprite = AnimationSprite()
+level_cleared_animation.add(animationSprite)
+
+
+
+
 # draw_grid(cell_size)
 #TODO: gestisci lo start dei fantasmi qua
 
 GHOSTEVENT = pygame.USEREVENT+1
 TIMEEVENT = pygame.USEREVENT+2
 PACMANEVENT = pygame.USEREVENT+3
+AnimationEvent = pygame.USEREVENT+4
+
 pygame.time.set_timer(event=GHOSTEVENT, millis=500)
 pygame.time.set_timer(event=TIMEEVENT, millis=1000)
 # pygame.time.set_timer(event=PACMANEVENT, millis=500)
+pygame.time.set_timer(event=AnimationEvent, millis=200)
 time_passed[0]=pygame.time.get_ticks()
 
 run  = True
@@ -587,18 +639,26 @@ while run:
             display_score()
             fruit_manager()
             check_dots_eaten()
+        
+        if (event.type == AnimationEvent and animation!=-1):
+            animation+=1
+            if animation==9:
+                animation=-1
+                level_cleared()
+        
 
 
-
-
-
-    draw_background()
-    game_group.update()
-    game_group.draw(screen)
-    display_bottom_fruit()
-    display_score()
-    display_lives()
-
+    if animation==-1:
+        draw_background()
+        game_group.update()
+        game_group.draw(screen)
+        display_bottom_fruit()
+        display_score()
+        display_lives()
+    else:
+        draw_background()
+        level_cleared_animation.update(animation)
+        level_cleared_animation.draw(screen)
     #draw_grid(cell_size)
 
     pygame.display.flip()

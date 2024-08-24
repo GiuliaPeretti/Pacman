@@ -19,7 +19,9 @@ class Pacman:
         self.row=row
         self.col=col
     
-
+    def set_starting_pos(self):
+        self.row=26
+        self.col=14       
 
     def move_pacman(self, dir, grid, screen):
         match(dir):
@@ -171,7 +173,7 @@ class Ghost:
         for i in range (len(possible_dir)):
             row = self.row+possible_dir[i][0]
             col = self.col+possible_dir[i][1]
-            if not grid[self.row+possible_dir[i][0]][self.col+possible_dir[i][1]].is_wall():
+            if (row>+0 and row<36 and col>=0 and col<28)and (not grid[row][col].is_wall()):
                 valids.append(i)
         match (self.direction):
             case 0:
@@ -239,13 +241,19 @@ class Blinky(Ghost):
                     
             case 1:
                 #RIGHT
-                self.col=self.col+1
+                if self.col==27:
+                    self.col=0
+                else:
+                    self.col=self.col+1
             case 2:
                 #DOWN
                 self.row=self.row+1
             case 3:
                 #LEFT
-                self.col=self.col-1
+                if self.col==0:
+                    self.col=27
+                else:
+                    self.col=self.col-1
         grid[self.row][self.col].set_ghost(self.ghost_id)
 
 class Pinky(Ghost):
@@ -260,7 +268,7 @@ class Pinky(Ghost):
         self.ghost_id=2
 
     def set_starting_pos(self):
-        self.starting=0
+        self.starting=-1
         self.row=17
         self.col=14
 
@@ -333,7 +341,7 @@ class Inky(Ghost):
         self.blinky=blinky
 
     def set_starting_pos(self):
-        self.starting=0
+        self.starting=-2
         self.row=17
         self.col=12
 
@@ -417,7 +425,7 @@ class Clyde(Ghost):
         self.ghost_id=4
 
     def set_starting_pos(self):
-        self.starting=0
+        self.starting=-2
         self.row=17
         self.col=16
  
