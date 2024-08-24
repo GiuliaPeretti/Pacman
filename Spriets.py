@@ -23,7 +23,8 @@ class CellSprite(pygame.sprite.Sprite):
     def __init__(self, cell, row, col):
         super().__init__()
         self.cell = cell
-        self.image = pygame.image.load("High_score.png")
+        self.image = pygame.Surface(cell_size,cell_size)
+        self.image.fill(BLACK)
         self.image = pygame.transform.rotozoom(self.image, 0, resize_factor)
         self.rect = self.image.get_rect()
         self.rect.center = [row*cell_size+(cell_size/2)*resize_factor,col*cell_size+(cell_size/2)*resize_factor]
@@ -32,9 +33,8 @@ class CellSprite(pygame.sprite.Sprite):
     def update(self):
         match(self.cell.get_dot()):
             case 0:
-                return
-                # x,y,w,h=self.col*cell_size, self.row*cell_size, cell_size,cell_size
-                # pygame.draw.rect(screen, PINK, (x,y,w,h))
+                self.image = pygame.Surface(cell_size,cell_size)
+                self.image.fill(BLACK)
             case 1:
                 #TODO: fix this
                 img = pygame.image.load("Fruits\\Dot.png").convert()
@@ -55,7 +55,7 @@ class CellSprite(pygame.sprite.Sprite):
             "Fruits\\Key.png",
             ]
 
-            img = pygame.image.load(fruits[level-1]).convert()
+            img = pygame.image.load(fruits[0]).convert()
             self.image = pygame.transform.smoothscale(img,(img.get_width()*resize_factor,img.get_height()*resize_factor))
 
 

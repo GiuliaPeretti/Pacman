@@ -49,6 +49,9 @@ class Cell:
     def get_dot(self):
         return self.dot
     
+    def get_wall(self):
+        return self.wall
+    
     def draw_dot(self, screen, level):
         match(self.dot):
             case 0:
@@ -62,7 +65,7 @@ class Cell:
                 x,y,w,h=self.col*cell_size+(9*resize_factor), self.row*cell_size+(9*resize_factor), 6*resize_factor, 6*resize_factor
                 pygame.draw.rect(screen, (205, 150, 140), (x,y,w,h))      
             case 2:
-                img = pygame.image.load("Fruits\\Food.png").convert()
+                img = pygame.image.load("Fruits\\Power_pill.png").convert()
                 img = pygame.transform.smoothscale(img,(img.get_width()*resize_factor,img.get_height()*resize_factor))
                 screen.blit(img, ( self.col*cell_size+(cell_size-img.get_width())/2, self.row*cell_size+(cell_size-img.get_height())/2 ))
         if (self.fruit):
@@ -525,6 +528,11 @@ clydeSprite = ClydeSprite(clyde)
 game_group = pygame.sprite.Group()
 game_group.add(background)
 game_group.add(high_score)
+for row in range (len(grid)):
+    for col in range (len(grid[0])):
+        if not grid[row][col].get_wall:
+            cellSprite = CellSprite(grid[row][col], row, col)
+            game_group.add(cellSprite)
 game_group.add(pacmanSprite)
 game_group.add(blinkySprite)
 game_group.add(pinkySprite)
@@ -588,8 +596,7 @@ while run:
     display_bottom_fruit()
     display_score()
     display_lives()
-    draw_dots()
-    
+
     #draw_grid(cell_size)
 
     pygame.display.flip()
