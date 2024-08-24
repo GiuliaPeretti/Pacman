@@ -166,6 +166,7 @@ def write_number():
         screen.blit(text, (2,i))
 
 def init_grid():
+    global grid
     f = open("not_walls.txt", "r")
     walkable = ast.literal_eval(f.read())
     f.close()
@@ -353,7 +354,6 @@ def check_collision():
             ghosts[ghosts_pos.index(pacman.get_position())].set_starting(0)
         else:
             pacman.set_position(26,14)
-            pacman.display_pacman(screen)
             lives-=1
             display_lives()
             if lives==0:
@@ -467,7 +467,7 @@ def check_dots_eaten():
         inky.dot_limit_passed()
     elif (dots_eaten>=60 and level==1) or (dots_eaten>=50 and level==2) or level>2:
         clyde.dot_limit_passed()
-    if dots_eaten==240:
+    if dots_eaten==24:
         animation=0
 
 def display_game_over():
@@ -513,6 +513,10 @@ def display_ready():
 
 def clear_ready():
     pygame.draw.rect(screen, BLACK, (11*cell_size,20*cell_size, 144*resize_factor, 24*resize_factor))
+
+
+
+
 
 
 

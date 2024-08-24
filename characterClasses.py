@@ -111,6 +111,9 @@ class Ghost:
     
     def get_start_moves(self):
         return self.start_moves
+    
+    def get_direction(self):
+        return self.direction
 
     def move_ghost(self, grid, screen, level):
         self.x_offset=-1
@@ -128,13 +131,19 @@ class Ghost:
                 self.row=self.row-1
             case 1:
                 #RIGHT
-                self.col=self.col+1
+                if self.col==27:
+                    self.col=0
+                else:
+                    self.col=self.col+1
             case 2:
                 #DOWN
                 self.row=self.row+1
             case 3:
                 #LEFT
-                self.col=self.col-1
+                if self.col==0:
+                    self.col=27
+                else:
+                    self.col=self.col-1
 
         grid[self.row][self.col].set_ghost(self.ghost_id)
 
@@ -152,7 +161,7 @@ class Ghost:
         min=1000
         valids=self.get_valid_dir(grid)
         possible_dir=[[-1,0], [0,+1], [+1,0], [0,-1]]
-        selected_dir=-1
+        selected_dir=self.direction
         for i in valids:
             point_x= self.col+possible_dir[i][1]
             point_y = self.row+possible_dir[i][0]

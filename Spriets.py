@@ -110,7 +110,7 @@ class BlinkySprite(pygame.sprite.Sprite):
         if self.blinky.get_mode()==2:
             img= pygame.image.load("Ghosts\\Frightened.png")  
         else:
-            match(self.blinky.direction):
+            match(self.blinky.get_direction()):
                 case 0:
                     img= pygame.image.load("Ghosts\\Blinky_up.png")   
                     # self.blinky.set_y_offset(-1)             
@@ -145,7 +145,7 @@ class PinkySprite(pygame.sprite.Sprite):
         if self.pinky.get_mode()==2:
             img= pygame.image.load("Ghosts\\Frightened.png")  
         else:
-            match(self.pinky.direction):
+            match(self.pinky.get_direction()):
                 case 0:
                     img= pygame.image.load("Ghosts\\Pinky_up.png")   
                     # self.pinky.set_y_offset(-1)           
@@ -181,7 +181,7 @@ class InkySprite(pygame.sprite.Sprite):
         if self.inky.get_mode()==2:
             img= pygame.image.load("Ghosts\\Frightened.png")  
         else:
-            match(self.inky.direction):
+            match(self.inky.get_direction()):
                 case 0:
                     img= pygame.image.load("Ghosts\\Inky_up.png")   
                     # self.inky.set_y_offset(-1)        
@@ -217,7 +217,7 @@ class ClydeSprite(pygame.sprite.Sprite):
         if self.clyde.get_mode()==2:
             img= pygame.image.load("Ghosts\\Frightened.png")  
         else:
-            match(self.clyde.direction):
+            match(self.clyde.get_direction()):
                 case 0:
                     img= pygame.image.load("Ghosts\\Clyde_up.png")   
                     # self.clyde.set_y_offset(-1)        
