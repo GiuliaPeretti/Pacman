@@ -19,76 +19,45 @@ class Pacman:
         self.row=row
         self.col=col
     
-    def display_pacman(self, screen):
-        match(self.direction):
-            case 0:
-                img="Pacman\Pacman_up.png"                
-            case 1:
-                img="Pacman\Pacman_right.png"                
-            case 2:
-                img="Pacman\Pacman_down.png"                
-            case 3:
-                img="Pacman\Pacman_left.png"                
 
-        img = pygame.image.load(img).convert()
-        img = pygame.transform.smoothscale(img,(img.get_width()*resize_factor,img.get_height()*resize_factor))
-        screen.blit(img, (self.col*cell_size-(8*resize_factor),self.row*cell_size-(8*resize_factor)))
-
-    def clear_pacman(self, screen):
-        color=(0,0,0)
-        line_width=1
-        x,y,w,h=self.col*cell_size-(8*resize_factor), self.row*cell_size-(8*resize_factor), 42*resize_factor,42*resize_factor
-        pygame.draw.rect(screen, color, (x,y,w,h))
 
     def move_pacman(self, dir, grid, screen):
         match(dir):
             case 0: 
                 #UP
                 if self.row-1!=-1 and not grid[self.row-1][self.col].is_wall():
-                    # self.clear_pacman(screen)
                     self.row=self.row-1
                     self.direction=0
-                    # self.display_pacman(screen)
                     
                     
             case 1:
                 #RIGHT
                 if self.col+1==len(grid[0]) and self.row==17:
-                    # self.clear_pacman(screen)
                     self.col=0
                     self.direction=1
-                    # self.display_pacman(screen)
                       
 
                 if self.col+1!=len(grid[0]) and not grid[self.row][self.col+1].is_wall():
-                    # self.clear_pacman(screen)
                     self.col=self.col+1
                     self.direction=1
-                    # self.display_pacman(screen)
                 
                     
             case 2:
                 #DOWN
                 if self.row+1!=len(grid) and not grid[self.row+1][self.col].is_wall():
-                    # self.clear_pacman(screen)
                     self.row=self.row+1
                     self.direction=2
-                    # self.display_pacman(screen)
+
             case 3:
                 #LEFT
                 if self.col-1==-1 and self.row==17:
-                    # self.clear_pacman(screen)
                     self.col=27   
                     self.direction=3  
-                    # self.display_pacman(screen)
                     return
                 
                 if self.col-1!=-1 and not grid[self.row][self.col-1].is_wall():
-                    # self.clear_pacman(screen)
                     self.col=self.col-1
                     self.direction=3
-                    # self.display_pacman(screen)
-
 
 
 
@@ -150,32 +119,21 @@ class Ghost:
 
         dir = self.chose_direction(grid)
         self.direction=dir
+        grid[self.row][self.col].set_ghost(0)
         match(dir):
             case 0: 
                 #UP
-                # if not grid[self.row-1][self.col].is_wall():
-                # self.clear_ghost(screen, grid, level)
                 self.row=self.row-1
-                # self.display_ghost(screen)
-                    
             case 1:
                 #RIGHT
-                # if not grid[self.row][self.col+1].is_wall():
-                # self.clear_ghost(screen, grid, level)
                 self.col=self.col+1
-                # self.display_ghost(screen)
             case 2:
                 #DOWN
-                # if not grid[self.row+1][self.col].is_wall():
-                # self.clear_ghost(screen, grid, level)
                 self.row=self.row+1
-                # self.display_ghost(screen)
             case 3:
                 #LEFT
-                # if not grid[self.row][self.col-1].is_wall():
-                # self.clear_ghost(screen, grid, level)
                 self.col=self.col-1
-                # self.display_ghost(screen)
+
         grid[self.row][self.col].set_ghost(self.ghost_id)
 
     def chose_direction(self, grid):
@@ -233,18 +191,6 @@ class Ghost:
                 valids.remove(0)
         return valids
 
-    def clear_ghost(self, screen, grid, level):
-        color=(0,0,0)
-        line_width=1
-        x,y,w,h=self.col*cell_size-(8*resize_factor), self.row*cell_size-(8*resize_factor), 42*resize_factor,42*resize_factor
-        pygame.draw.rect(screen, BLACK, (x,y,w,h))
-        grid[self.row][self.col].draw_dot(screen, level)
-        grid[self.row][self.col].set_ghost(0)
-        # pygame.draw.line(screen, BLACK, (x,y),(x+cell_size,y), line_width)
-        # pygame.draw.line(screen, BLACK, (x+cell_size,y),(x+cell_size,y+cell_size), line_width)
-        # pygame.draw.line(screen, BLACK, (x,y+cell_size),(x+cell_size,y+cell_size), line_width)
-        # pygame.draw.line(screen, BLACK, (x,y),(x,y+cell_size), line_width)
-
 
 
 
@@ -264,35 +210,6 @@ class Blinky(Ghost):
         self.starting=0
         self.row=14
         self.col=13
-
-    def display_ghost(self, screen):
-        # color=(255,0,0)
-        # line_width=1
-        # x,y,w,h=self.col*cell_size, self.row*cell_size, cell_size,cell_size
-        # pygame.draw.rect(screen, color, (x,y,w,h))
-        # pygame.drawdisplay_ghost.line(screen, GRID_COLOR, (x,y),(x+cell_size,y), line_width)
-        # pygame.draw.line(screen, GRID_COLOR, (x+cell_size,y),(x+cell_size,y+cell_size), line_width)
-        # pygame.draw.line(screen, GRID_COLOR, (x,y+cell_size),(x+cell_size,y+cell_size), line_width)
-        # pygame.draw.line(screen, GRID_COLOR, (x,y),(x,y+cell_size), line_width)
-        
-        if (self.mode==2):
-            img="Ghosts\Frightened.png"
-        else:
-            match(self.direction):
-                case 0:
-                    img="Ghosts\Blinky_up.png"
-                case 1:
-                    img="Ghosts\Blinky_right.png"
-                case 2:
-                    img="Ghosts\Blinky_down.png"
-                case 3:
-                    img="Ghosts\Blinky_left.png"                
-
-        img = pygame.image.load(img).convert()
-        img = pygame.transform.smoothscale(img,(img.get_width()*resize_factor,img.get_height()*resize_factor))
-        screen.blit(img, (self.col*cell_size-(8*resize_factor),self.row*cell_size-(8*resize_factor)))
-
-
 
         
 
@@ -318,29 +235,17 @@ class Blinky(Ghost):
         match(dir):
             case 0: 
                 #UP
-                # if not grid[self.row-1][self.col].is_wall():
-                self.clear_ghost(screen, grid, level)
                 self.row=self.row-1
-                self.display_ghost(screen)
                     
             case 1:
                 #RIGHT
-                # if not grid[self.row][self.col+1].is_wall():
-                self.clear_ghost(screen, grid, level)
                 self.col=self.col+1
-                self.display_ghost(screen)
             case 2:
                 #DOWN
-                # if not grid[self.row+1][self.col].is_wall():
-                self.clear_ghost(screen, grid, level)
                 self.row=self.row+1
-                self.display_ghost(screen)
             case 3:
                 #LEFT
-                # if not grid[self.row][self.col-1].is_wall():
-                self.clear_ghost(screen, grid, level)
                 self.col=self.col-1
-                self.display_ghost(screen)
         grid[self.row][self.col].set_ghost(self.ghost_id)
 
 class Pinky(Ghost):
@@ -359,24 +264,6 @@ class Pinky(Ghost):
         self.row=17
         self.col=14
 
-
-    def display_ghost(self, screen):
-        if (self.mode==2):
-            img="Ghosts\Frightened.png"
-        else:
-            match(self.direction):
-                case 0:
-                    img="Ghosts\Pinky_up.png"
-                case 1:
-                    img="Ghosts\Pinky_right.png"
-                case 2:
-                    img="Ghosts\Pinky_down.png"
-                case 3:
-                    img="Ghosts\Pinky_left.png"                
-
-        img = pygame.image.load(img).convert()
-        img = pygame.transform.smoothscale(img,(img.get_width()*resize_factor,img.get_height()*resize_factor))
-        screen.blit(img, (self.col*cell_size-(8*resize_factor),self.row*cell_size-(8*resize_factor)))
 
     def set_target(self, grid):
         global pacman
@@ -410,60 +297,25 @@ class Pinky(Ghost):
         if self.starting==-1:
             if grid[14][13].get_ghost()!=1:
                 self.starting=0
-            if (self.mode==2):
-                    img="Ghosts\Frightened.png"
-            else: 
-                match(self.direction):
-                    case 0:
-                        img="Ghosts\Pinky_up.png"
-                    case 1:
-                        img="Ghosts\Pinky_right.png"
-                    case 2:
-                        img="Ghosts\Pinky_down.png"
-                    case 3:
-                        img="Ghosts\Pinky_left.png"   
-            img = pygame.image.load(img).convert()
-            img = pygame.transform.smoothscale(img,(img.get_width()*resize_factor,img.get_height()*resize_factor))
-            # screen.blit(img, (self.col*cell_size-(20*resize_factor),self.row*cell_size-(8*resize_factor)))
             grid[self.row][self.col].set_ghost(self.ghost_id)
             return
 
 
         self.direction=self.start_moves[self.starting]
-        x,y,w,h=self.col*cell_size-(20*resize_factor), self.row*cell_size-(8*resize_factor), 42*resize_factor,42*resize_factor
-        # pygame.draw.rect(screen, BLACK, (x,y,w,h))
+
         grid[self.row][self.col].set_ghost(0)
         grid[self.row][self.col].draw_dot(screen, level)
 
         match(self.direction):
             case 0:
-                if (self.mode==2):
-                    img="Ghosts\Frightened.png"
-                else: 
-                    img="Ghosts\Pinky_up.png"
                 self.row-=1
             case 1:
-                if (self.mode==2):
-                    img="Ghosts\Frightened.png"
-                else: 
-                    img="Ghosts\Pinky_right.png"
                 self.col+=1
             case 2:
-                if (self.mode==2):
-                    img="Ghosts\Frightened.png"
-                else: 
-                    img="Ghosts\Pinky_down.png"
                 self.row+=1
             case 3:
-                if (self.mode==2):
-                    img="Ghosts\Frightened.png"
-                else: 
-                    img="Ghosts\Pinky_left.png"   
                 self.col-=1             
 
-        img = pygame.image.load(img).convert()
-        img = pygame.transform.smoothscale(img,(img.get_width()*resize_factor,img.get_height()*resize_factor))
-        # screen.blit(img, (self.col*cell_size-(20*resize_factor),self.row*cell_size-(8*resize_factor)))
         grid[self.row][self.col].set_ghost(self.ghost_id)
         self.starting+=1
 
@@ -485,23 +337,6 @@ class Inky(Ghost):
         self.row=17
         self.col=12
 
-    def display_ghost(self, screen):
-        if (self.mode==2):
-            img="Ghosts\Frightened.png"
-        else:        
-            match(self.direction):
-                case 0:
-                    img="Ghosts\Inky_up.png"
-                case 1:
-                    img="Ghosts\Inky_right.png"
-                case 2:
-                    img="Ghosts\Inky_down.png"
-                case 3:
-                    img="Ghosts\Inky_left.png"                
-
-        img = pygame.image.load(img).convert()
-        img = pygame.transform.smoothscale(img,(img.get_width()*resize_factor,img.get_height()*resize_factor))
-        screen.blit(img, (self.col*cell_size-(8*resize_factor),self.row*cell_size-(8*resize_factor)))
 
     def set_target(self, grid):
         match(self.mode):
@@ -541,21 +376,7 @@ class Inky(Ghost):
                         check=True
                 if not check:
                     self.starting=0
-            if (self.mode==2):
-                img="Ghosts\Frightened.png"
-            else:      
-                match(self.direction):
-                    case 0:
-                        img="Ghosts\Inky_up.png"
-                    case 1:
-                        img="Ghosts\Inky_right.png"
-                    case 2:
-                        img="Ghosts\Inky_down.png"
-                    case 3:
-                        img="Ghosts\Inky_left.png"   
-            img = pygame.image.load(img).convert()
-            img = pygame.transform.smoothscale(img,(img.get_width()*resize_factor,img.get_height()*resize_factor))
-            screen.blit(img, (self.col*cell_size-(20*resize_factor),self.row*cell_size-(8*resize_factor)))
+
             grid[self.row][self.col].set_ghost(self.ghost_id)
             return
 
@@ -568,33 +389,14 @@ class Inky(Ghost):
 
         match(self.direction):
             case 0:
-                if (self.mode==2):
-                    img="Ghosts\Frightened.png"
-                else:      
-                    img="Ghosts\Inky_up.png"
                 self.row-=1
             case 1:
-                if (self.mode==2):
-                    img="Ghosts\Frightened.png"
-                else: 
-                    img="Ghosts\Inky_right.png"
                 self.col+=1
             case 2:
-                if (self.mode==2):
-                    img="Ghosts\Frightened.png"
-                else: 
-                    img="Ghosts\Inky_down.png"
                 self.row+=1
-            case 3:
-                if (self.mode==2):
-                    img="Ghosts\Frightened.png"
-                else: 
-                    img="Ghosts\Inky_left.png"   
+            case 3: 
                 self.col-=1             
 
-        img = pygame.image.load(img).convert()
-        img = pygame.transform.smoothscale(img,(img.get_width()*resize_factor,img.get_height()*resize_factor))
-        screen.blit(img, (self.col*cell_size-(20*resize_factor),self.row*cell_size-(8*resize_factor)))
         grid[self.row][self.col].set_ghost(self.ghost_id)
         self.starting+=1
 
@@ -618,24 +420,7 @@ class Clyde(Ghost):
         self.starting=0
         self.row=17
         self.col=16
-
-    def display_ghost(self, screen):
-        if (self.mode==2):
-            img="Ghosts\Frightened.png"
-        else:        
-            match(self.direction):
-                case 0:
-                    img="Ghosts\Clyde_up.png"
-                case 1:
-                    img="Ghosts\Clyde_right.png"
-                case 2:
-                    img="Ghosts\Clyde_down.png"
-                case 3:
-                    img="Ghosts\Clyde_left.png"                
-
-        img = pygame.image.load(img).convert()
-        img = pygame.transform.smoothscale(img,(img.get_width()*resize_factor,img.get_height()*resize_factor))
-        screen.blit(img, (self.col*cell_size-(8*resize_factor),self.row*cell_size-(8*resize_factor)))  
+ 
 
     def set_target(self, grid):
         global pacman
@@ -676,21 +461,7 @@ class Clyde(Ghost):
                         check=True
                 if not check:
                     self.starting=0
-            if (self.mode==2):
-                img="Ghosts\Frightened.png"
-            else:        
-                match(self.direction):
-                    case 0:
-                        img="Ghosts\Clyde_up.png"
-                    case 1:
-                        img="Ghosts\Clyde_right.png"
-                    case 2:
-                        img="Ghosts\Clyde_down.png"
-                    case 3:
-                        img="Ghosts\Clyde_left.png"   
-            img = pygame.image.load(img).convert()
-            img = pygame.transform.smoothscale(img,(img.get_width()*resize_factor,img.get_height()*resize_factor))
-            screen.blit(img, (self.col*cell_size-(20*resize_factor),self.row*cell_size-(8*resize_factor)))
+
             grid[self.row][self.col].set_ghost(self.ghost_id)
             return
 
@@ -703,33 +474,15 @@ class Clyde(Ghost):
 
         match(self.direction):
             case 0:
-                if (self.mode==2):
-                    img="Ghosts\Frightened.png"
-                else:        
-                    img="Ghosts\Clyde_up.png"
                 self.row-=1
             case 1:
-                if (self.mode==2):
-                    img="Ghosts\Frightened.png"
-                else:    
-                    img="Ghosts\Clyde_right.png"
                 self.col+=1
             case 2:
-                if (self.mode==2):
-                    img="Ghosts\Frightened.png"
-                else:    
-                    img="Ghosts\Clyde_down.png"
                 self.row+=1
             case 3:
-                if (self.mode==2):
-                    img="Ghosts\Frightened.png"
-                else:    
-                    img="Ghosts\Clyde_left.png"   
                 self.col-=1             
 
-        img = pygame.image.load(img).convert()
-        img = pygame.transform.smoothscale(img,(img.get_width()*resize_factor,img.get_height()*resize_factor))
-        screen.blit(img, (self.col*cell_size-(20*resize_factor),self.row*cell_size-(8*resize_factor)))
+
         grid[self.row][self.col].set_ghost(self.ghost_id)
         self.starting+=1
 

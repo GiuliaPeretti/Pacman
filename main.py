@@ -52,6 +52,9 @@ class Cell:
     def get_wall(self):
         return self.wall
     
+    def get_fruit(self):
+        return self.fruit
+    
     def draw_dot(self, screen, level):
         match(self.dot):
             case 0:
@@ -403,16 +406,13 @@ def fruit_manager():
     if fruit_time is not None:
         if pygame.time.get_ticks()-fruit_time>=9000:
             grid[20][13].set_fruit(False)
-            grid[20][14].set_fruit(False)
             pygame.draw.rect(screen, BLACK, (13*cell_size+(4*resize_factor),20*cell_size-(8*resize_factor),40*resize_factor,40*resize_factor))
             grid[20][13].draw_dot(screen, level)
-            grid[20][14].draw_dot(screen, level)
 
             fruit_time=None
     if (dots_eaten==7 and fruit_time is None) or (dots_eaten==14 and fruit_time is None):
         
         grid[20][13].set_fruit(True)
-        grid[20][14].set_fruit(True)
         grid[20][13].draw_dot(screen, level)
         fruit_time=pygame.time.get_ticks()
 
@@ -530,7 +530,8 @@ game_group.add(background)
 game_group.add(high_score)
 for row in range (len(grid)):
     for col in range (len(grid[0])):
-        if not grid[row][col].get_wall:
+        if not grid[row][col].get_wall():
+            print(row,col)
             cellSprite = CellSprite(grid[row][col], row, col)
             game_group.add(cellSprite)
 game_group.add(pacmanSprite)
@@ -571,8 +572,9 @@ while run:
         if (event.type == GHOSTEVENT and not game_over):
             blinky.move_ghost(grid, screen, level)
             pinky.move_ghost(grid, screen, level)
-            # inky.move_ghost(grid, screen, level)
-            # clyde.move_ghost(grid, screen, level)
+            inky.move_ghost(grid, screen, level)
+            clyde.move_ghost(grid, screen, level)
+            print(inky.get_starting())
             check_collision()
             fruit_manager()
             

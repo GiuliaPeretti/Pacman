@@ -23,17 +23,17 @@ class CellSprite(pygame.sprite.Sprite):
     def __init__(self, cell, row, col):
         super().__init__()
         self.cell = cell
-        self.image = pygame.Surface(cell_size,cell_size)
+        self.image = pygame.Surface((cell_size,cell_size))
         self.image.fill(BLACK)
         self.image = pygame.transform.rotozoom(self.image, 0, resize_factor)
         self.rect = self.image.get_rect()
-        self.rect.center = [row*cell_size+(cell_size/2)*resize_factor,col*cell_size+(cell_size/2)*resize_factor]
+        self.rect.center = [col*cell_size+(cell_size/2)*resize_factor,row*cell_size+(cell_size/2)*resize_factor]
         self.cell
 
     def update(self):
         match(self.cell.get_dot()):
             case 0:
-                self.image = pygame.Surface(cell_size,cell_size)
+                self.image = pygame.Surface((cell_size,cell_size))
                 self.image.fill(BLACK)
             case 1:
                 #TODO: fix this
@@ -43,7 +43,7 @@ class CellSprite(pygame.sprite.Sprite):
             case 2:
                 img = pygame.image.load("Fruits\\Power_pill.png").convert()
                 self.image = pygame.transform.smoothscale(img,(img.get_width()*resize_factor,img.get_height()*resize_factor))
-        if (self.fruit):
+        if (self.cell.get_fruit()):
             fruits=[
             "Fruits\\Cherry.png",
             "Fruits\\Strawberry.png",
