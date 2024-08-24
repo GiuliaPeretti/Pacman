@@ -516,10 +516,14 @@ init_grid()
 
 
 background = BackgroundSprite()
-pacmanSprite = PacmanSprite()
+pacmanSprite = PacmanSprite(pacman)
+blinkySprite = BlinkySprite(blinky)
+pinkySprite = PinkySprite(pinky)
 game_group = pygame.sprite.Group()
 game_group.add(background)
 game_group.add(pacmanSprite)
+game_group.add(blinkySprite)
+game_group.add(pinkySprite)
 
 # draw_grid(cell_size)
 #TODO: gestisci lo start dei fantasmi qua
@@ -545,15 +549,14 @@ while run:
             for i in range(len(INPUTS)):
                 if (event.key==INPUTS[i]):
                     pacman.move_pacman(i, grid, screen)
-                    pacmanSprite.change_pos(pacman.get_position())
                     check_collision()
                     display_score()
                     fruit_manager()
                     check_dots_eaten()
                     break
         if (event.type == GHOSTEVENT and not game_over):
-            # blinky.move_ghost(grid, screen, level)
-            # pinky.move_ghost(grid, screen, level)
+            blinky.move_ghost(grid, screen, level)
+            pinky.move_ghost(grid, screen, level)
             # inky.move_ghost(grid, screen, level)
             # clyde.move_ghost(grid, screen, level)
             check_collision()
@@ -569,9 +572,14 @@ while run:
             fruit_manager()
             check_dots_eaten()
 
-    # screen.blit(pygame.image.load("Background.png"), (0,0))
-    game_group.draw(screen)
+
+
+
+
+    draw_background()
     game_group.update()
+    game_group.draw(screen)
+    #draw_grid(cell_size)
 
     pygame.display.flip()
     clock.tick(30)

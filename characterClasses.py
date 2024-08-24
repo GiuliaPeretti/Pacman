@@ -104,6 +104,8 @@ class Ghost:
         self.starting=0
         self.target=[None,None]
         self.special_intersection= [ [14, 12], [14, 15], [26, 12], [26, 15] ]
+        self.x_offset=-1
+        self.y_offset=-1
 
     def get_mode(self):
         return self.mode
@@ -121,7 +123,22 @@ class Ghost:
         self.row=row
         self.col=col
 
+    def set_x_offset(self, n):
+        self.x_offset+=n
+
+    def set_y_offset(self, n):
+        self.y_offset+=n
+
+    def get_x_offset(self):
+        return self.x_offset
+
+    def get_y_offset(self):
+        return self.y_offset
+
+
     def move_ghost(self, grid, screen, level):
+        self.x_offset=-1
+        self.y_offset=-1
         if self.starting<len(self.start_moves):
             self.start_procedure(grid, screen, level)
             return
@@ -132,28 +149,28 @@ class Ghost:
             case 0: 
                 #UP
                 # if not grid[self.row-1][self.col].is_wall():
-                self.clear_ghost(screen, grid, level)
+                # self.clear_ghost(screen, grid, level)
                 self.row=self.row-1
-                self.display_ghost(screen)
+                # self.display_ghost(screen)
                     
             case 1:
                 #RIGHT
                 # if not grid[self.row][self.col+1].is_wall():
-                self.clear_ghost(screen, grid, level)
+                # self.clear_ghost(screen, grid, level)
                 self.col=self.col+1
-                self.display_ghost(screen)
+                # self.display_ghost(screen)
             case 2:
                 #DOWN
                 # if not grid[self.row+1][self.col].is_wall():
-                self.clear_ghost(screen, grid, level)
+                # self.clear_ghost(screen, grid, level)
                 self.row=self.row+1
-                self.display_ghost(screen)
+                # self.display_ghost(screen)
             case 3:
                 #LEFT
                 # if not grid[self.row][self.col-1].is_wall():
-                self.clear_ghost(screen, grid, level)
+                # self.clear_ghost(screen, grid, level)
                 self.col=self.col-1
-                self.display_ghost(screen)
+                # self.display_ghost(screen)
         grid[self.row][self.col].set_ghost(self.ghost_id)
 
     def chose_direction(self, grid):
