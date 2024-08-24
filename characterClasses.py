@@ -21,7 +21,28 @@ class Pacman:
     
     def set_starting_pos(self):
         self.row=26
-        self.col=14       
+        self.col=14
+    
+    def display_pacman(self, screen):
+        match(self.direction):
+            case 0:
+                img="Pacman\Pacman_up.png"                
+            case 1:
+                img="Pacman\Pacman_right.png"                
+            case 2:
+                img="Pacman\Pacman_down.png"                
+            case 3:
+                img="Pacman\Pacman_left.png"                
+
+        img = pygame.image.load(img).convert()
+        img = pygame.transform.smoothscale(img,(img.get_width()*resize_factor,img.get_height()*resize_factor))
+        screen.blit(img, (self.col*cell_size-(8*resize_factor),self.row*cell_size-(8*resize_factor)))
+
+    def clear_pacman(self, screen):
+        color=(0,0,0)
+        line_width=1
+        x,y,w,h=self.col*cell_size-(8*resize_factor), self.row*cell_size-(8*resize_factor), 42*resize_factor,42*resize_factor
+        pygame.draw.rect(screen, color, (x,y,w,h))
 
     def move_pacman(self, dir, grid, screen):
         match(dir):
@@ -82,7 +103,7 @@ class Ghost:
         return self.mode
 
     def get_position(self):
-        return [self.row,self.col]
+        return [self.row, self.col]
 
     def set_starting(self, n):
         self.starting=n
@@ -218,7 +239,7 @@ class Blinky(Ghost):
         self.ghost_id=1
     
     def set_starting_pos(self):
-        self.starting=0
+        self.starting=-1
         self.row=14
         self.col=13
 
@@ -238,7 +259,6 @@ class Blinky(Ghost):
                 return
 
     def start_procedure(self, grid, screen, level):
-
         dir=self.start_moves[0]
         self.starting+=1
         
@@ -350,7 +370,7 @@ class Inky(Ghost):
         self.blinky=blinky
 
     def set_starting_pos(self):
-        self.starting=-2
+        self.starting=-1
         self.row=17
         self.col=12
 
@@ -434,7 +454,7 @@ class Clyde(Ghost):
         self.ghost_id=4
 
     def set_starting_pos(self):
-        self.starting=-2
+        self.starting=-1
         self.row=17
         self.col=16
  

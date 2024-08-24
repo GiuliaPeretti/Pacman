@@ -173,9 +173,14 @@ def init_grid():
     f = open("intersection.txt", "r")
     intersections = ast.literal_eval(f.read())
     f.close()
+    f = open("power_pill.txt", "r")
+    power_pill = ast.literal_eval(f.read())
+    f.close()
     f = open("dots.txt", "r")
     dots = ast.literal_eval(f.read())
     f.close()
+
+
 
     for row in range (height_in_cell):
         temp=[]
@@ -185,16 +190,16 @@ def init_grid():
             intersection=False
             if [row,col] in walkable:
                 wall=False
-                dot=1
             if [row,col] in intersections:
                 intersection=True
             if [row,col] in dots:
+                dot=1
+            if [row,col] in power_pill:
                 dot=2
+
             temp.append(Cell(row, col, wall, dot, intersection))
         grid.append(temp)
-    for i in range (0,6):
-        grid[17][i].set_dot(0)
-        grid[17][len(grid[0])-i-1].set_dot(0)
+
                 
 # def draw_cells():
 #     global grid
@@ -338,6 +343,7 @@ def ghost_mode_manager():
 
 def check_collision():
     global pacman 
+    global game_over
     global blinky
     global pinky
     global inky
@@ -357,15 +363,14 @@ def check_collision():
             lives-=1
             display_lives()
             if lives==0:
-                display_game_over()
-                pacman.clear_pacman(screen)
-                game_over=True
                 blinky.clear_ghost(screen, grid, level)
                 pinky.clear_ghost(screen, grid, level)
                 inky.clear_ghost(screen, grid, level)
                 clyde.clear_ghost(screen, grid, level)
-
-
+                game_over=True
+                display_game_over()
+                if grid[20][13].get_fruit():
+                    grid[20][13].draw_dot(screen, level)
 
 def display_lives():
     count=0
@@ -410,7 +415,7 @@ def fruit_manager():
             grid[20][13].draw_dot(screen, level)
 
             fruit_time=None
-    if (dots_eaten==7 and fruit_time is None) or (dots_eaten==14 and fruit_time is None):
+    if (dots_eaten==70 and fruit_time is None) or (dots_eaten==140 and fruit_time is None):
         
         grid[20][13].set_fruit(True)
         grid[20][13].draw_dot(screen, level)
@@ -475,47 +480,6 @@ def display_game_over():
     img = pygame.transform.smoothscale(img,(img.get_width()*resize_factor,img.get_height()*resize_factor))
     screen.blit(img, (9*cell_size,20*cell_size))
 
-def level_cleared():
-    global blinky
-    global pinky
-    global inky
-    global clyde
-    global pacman
-    global level
-    global ready
-
-
-    #TODO: animation
-    level+=1
-    init_grid()
-    ready=True
-
-    pacman.set_starting_pos()
-
-    ghosts=[blinky, pinky, inky, clyde]
-
-
-    display_background()
-    draw_dots()
-    display_score()
-    display_lives()
-    display_bottom_fruit()
-    # display_ready()
-    #TODO: qando chiami start_procedure su blinky si muove
-    for g in ghosts:
-        g.set_starting_pos()
-
-
-def display_ready():
-    img = pygame.image.load("Ready.png").convert()
-    img = pygame.transform.smoothscale(img,(img.get_width()*resize_factor,img.get_height()*resize_factor))
-    screen.blit(img, (11*cell_size,20*cell_size))
-
-def clear_ready():
-    pygame.draw.rect(screen, BLACK, (11*cell_size,20*cell_size, 144*resize_factor, 24*resize_factor))
-
-
-
 
 
 
@@ -536,10 +500,8 @@ level=1
 mode_length=[7,20,7,20,5,20,5]
 #pos: 0 -> Scatter, 1 -> Chase, 2 -> Frightened
 time_passed=[None,None,None]
-lives=4
+lives=1
 fruit_time=None
-game_over=False
-animation=-1
 pacman = Pacman()
 blinky = Blinky(pacman)
 pinky = Pinky(pacman)
@@ -619,6 +581,11 @@ while run:
         if (event.type == pygame.KEYDOWN and not game_over):
             for i in range(len(INPUTS)):
                 if (event.key==INPUTS[i]):
+                    if ready:
+                        ready = False
+                        clear_ready()
+
+
                     pacman.move_pacman(i, grid, screen)
                     check_collision()
                     display_score()
