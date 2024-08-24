@@ -167,16 +167,16 @@ def write_number():
 
 def init_grid():
     global grid
-    f = open("not_walls.txt", "r")
+    f = open("Cells\\not_walls.txt", "r")
     walkable = ast.literal_eval(f.read())
     f.close()
-    f = open("intersection.txt", "r")
+    f = open("Cells\\intersection.txt", "r")
     intersections = ast.literal_eval(f.read())
     f.close()
-    f = open("power_pill.txt", "r")
+    f = open("Cells\\power_pill.txt", "r")
     power_pill = ast.literal_eval(f.read())
     f.close()
-    f = open("dots.txt", "r")
+    f = open("Cells\\dots.txt", "r")
     dots = ast.literal_eval(f.read())
     f.close()
 
@@ -481,8 +481,37 @@ def display_game_over():
     screen.blit(img, (9*cell_size,20*cell_size))
 
 
+def level_cleared():
+    global blinky
+    global pinky
+    global inky
+    global clyde
+    global level
+    global ready
+    global readySprite
+    #TODO: animation
+    level+=1
+    pacman.set_starting_pos()
+    blinky.set_starting_pos()
+    pinky.set_starting_pos()
+    inky.set_starting_pos()
+    clyde.set_starting_pos()
+    ready=True
+    readySprite.set_ready(True)
+    reset_grid()
 
-
+def reset_grid():
+    global grid
+    f = open("dots.txt", "r")
+    dots = ast.literal_eval(f.read())
+    f.close()
+    f = open("power_pill.txt", "r")
+    power_pill = ast.literal_eval(f.read())
+    f.close()
+    for pos in dots:
+        grid[pos[0]][pos[1]].set_dot(1)
+    for pos in power_pill:
+        grid[pos[0]][pos[1]].set_dot(2)
 
 
 pygame.init()
@@ -500,8 +529,11 @@ level=1
 mode_length=[7,20,7,20,5,20,5]
 #pos: 0 -> Scatter, 1 -> Chase, 2 -> Frightened
 time_passed=[None,None,None]
-lives=1
+lives=4
 fruit_time=None
+animation=-1
+game_over=False
+ready=True
 pacman = Pacman()
 blinky = Blinky(pacman)
 pinky = Pinky(pacman)
@@ -527,6 +559,7 @@ init_grid()
 
 background = BackgroundSprite()
 high_score = HighScoreSprite()
+readySprite = ReadySprite()
 pacmanSprite = PacmanSprite(pacman)
 blinkySprite = BlinkySprite(blinky)
 pinkySprite = PinkySprite(pinky)
@@ -538,9 +571,9 @@ game_group.add(high_score)
 for row in range (len(grid)):
     for col in range (len(grid[0])):
         if not grid[row][col].get_wall():
-            print(row,col)
             cellSprite = CellSprite(grid[row][col], row, col)
             game_group.add(cellSprite)
+game_group.add(readySprite)
 game_group.add(pacmanSprite)
 game_group.add(blinkySprite)
 game_group.add(pinkySprite)
@@ -583,7 +616,7 @@ while run:
                 if (event.key==INPUTS[i]):
                     if ready:
                         ready = False
-                        clear_ready()
+                        readySprite.set_ready(False)
 
 
                     pacman.move_pacman(i, grid, screen)
@@ -592,19 +625,18 @@ while run:
                     fruit_manager()
                     check_dots_eaten()
                     break
-        if (event.type == GHOSTEVENT and not game_over):
+        if (event.type == GHOSTEVENT and not game_over and not ready):
             blinky.move_ghost(grid, screen, level)
             pinky.move_ghost(grid, screen, level)
             inky.move_ghost(grid, screen, level)
             clyde.move_ghost(grid, screen, level)
-            print(inky.get_starting())
             check_collision()
             fruit_manager()
             
-        if (event.type == TIMEEVENT and not game_over):
+        if (event.type == TIMEEVENT and not game_over and not ready):
             ghost_mode_manager()
 
-        if (event.type == PACMANEVENT and not game_over):
+        if (event.type == PACMANEVENT and not game_over and not ready):
             pacman.move_pacman(pacman.get_direction(), grid, screen)
             check_collision()
             display_score()

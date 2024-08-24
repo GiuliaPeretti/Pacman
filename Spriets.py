@@ -8,31 +8,50 @@ from settings import *
 class AnimationSprite(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        self.image = pygame.image.load("Background.png")
+        self.image = pygame.image.load("Background\\Background.png")
         self.image = pygame.transform.rotozoom(self.image, 0, resize_factor)
         self.rect = self.image.get_rect()
     def update(self, n):
         if n%2==0:
-            self.image = pygame.image.load("Background.png")
+            self.image = pygame.image.load("Background\\Background.png")
             self.image = pygame.transform.rotozoom(self.image, 0, resize_factor)
         else: 
-            self.image = pygame.image.load("Background_white.png")
+            self.image = pygame.image.load("Background\\Background_white.png")
             self.image = pygame.transform.rotozoom(self.image, 0, resize_factor)
 
 class BackgroundSprite(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        self.image = pygame.image.load("Background.png")
+        self.image = pygame.image.load("Background\\Background.png")
         self.image = pygame.transform.rotozoom(self.image, 0, resize_factor)
         self.rect = self.image.get_rect()
 
 class HighScoreSprite(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        self.image = pygame.image.load("High_score.png")
+        self.image = pygame.image.load("Background\\High_score.png")
         self.image = pygame.transform.rotozoom(self.image, 0, resize_factor)
         self.rect = self.image.get_rect()
         self.rect.topleft = [9*cell_size,2]
+
+class ReadySprite(pygame.sprite.Sprite):
+    def __init__(self):
+        super().__init__()
+        img = pygame.image.load("Background\\Ready.png").convert()
+        self.image = pygame.transform.smoothscale(img,(img.get_width()*resize_factor,img.get_height()*resize_factor))
+        self.rect = self.image.get_rect()
+        self.rect.topleft = [11*cell_size,20*cell_size]
+
+    def set_ready(self, b):
+        if b:
+            img = pygame.image.load("Background\\Ready.png").convert()
+            self.image = pygame.transform.smoothscale(img,(img.get_width()*resize_factor,img.get_height()*resize_factor))
+        else:
+            self.image=pygame.Surface((180*resize_factor, 24*resize_factor))
+            self.image.fill(BLACK)
+
+
+
 
 class CellSprite(pygame.sprite.Sprite):
     def __init__(self, cell, row, col):

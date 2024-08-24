@@ -22,6 +22,7 @@ class Pacman:
     def set_starting_pos(self):
         self.row=26
         self.col=14
+        self.direction=3
     
     def display_pacman(self, screen):
         match(self.direction):
@@ -242,6 +243,8 @@ class Blinky(Ghost):
         self.starting=-1
         self.row=14
         self.col=13
+        self.direction=3
+        self.mode=0
 
         
 
@@ -300,6 +303,8 @@ class Pinky(Ghost):
         self.starting=-1
         self.row=17
         self.col=14
+        self.direction=2
+        self.mode=0
 
 
     def set_target(self, grid):
@@ -373,6 +378,8 @@ class Inky(Ghost):
         self.starting=-1
         self.row=17
         self.col=12
+        self.direction=0
+        self.mode=0
 
 
     def set_target(self, grid):
@@ -457,6 +464,8 @@ class Clyde(Ghost):
         self.starting=-1
         self.row=17
         self.col=16
+        self.direction=0
+        self.mode=0
  
 
     def set_target(self, grid):
