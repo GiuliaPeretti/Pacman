@@ -202,7 +202,7 @@ def init_grid():
 #         for col in range (len(grid[0])):
 #             grid[row][col].draw_cell(screen)
 
-def display_img():
+def display_background():
     # images=[
     #     "GamesImages\\bottom_to_right.png",
     #     "GamesImages\\bottom_to_left.png",
@@ -444,6 +444,7 @@ def check_dots_eaten():
     global pinky
     global inky
     global clyde
+    global animation
     pacman_pos=pacman.get_position()
     match (grid[pacman_pos[0]][pacman_pos[1]].get_dot()):
         case 0:
@@ -470,7 +471,7 @@ def check_dots_eaten():
     elif (dots_eaten==60 and level==1) or (dots_eaten==50 and level==2):
         clyde.dot_limit_passed()
     if dots_eaten==24:
-        level_cleared()
+        animation=0
 
 def display_game_over():
     img = pygame.image.load("Game_over.png").convert()
@@ -499,7 +500,7 @@ def level_cleared():
     ghosts=[blinky, pinky, inky, clyde]
 
 
-    display_img()
+    display_background()
     draw_dots()
     display_score()
     display_lives()
@@ -521,6 +522,34 @@ def display_ready():
 
 def clear_ready():
     pygame.draw.rect(screen, BLACK, (11*cell_size,20*cell_size, 144*resize_factor, 24*resize_factor))
+
+
+def display_animation():
+    global animation
+    if animation <= 8:
+        draw_background()
+        if animation%2==0:
+            img = pygame.image.load("Background.png").convert()
+            img = pygame.transform.smoothscale(img,(SCREEN_WIDTH,SCREEN_HEIGHT))
+            screen.blit(img, (0,0))
+        else: 
+            img = pygame.image.load("Background_white.png").convert()
+            img = pygame.transform.smoothscale(img,(SCREEN_WIDTH,SCREEN_HEIGHT))
+            screen.blit(img, (0,0))
+        img = pygame.image.load("High_score.png").convert()
+        img = pygame.transform.smoothscale(img,(img.get_width()*resize_factor,img.get_height()*resize_factor))
+        screen.blit(img, (9*cell_size,2))
+        display_bottom_fruit()
+        display_lives()
+        display_score()
+        animation+=1
+
+    else:
+        level_cleared()
+        animation=-1
+    
+
+
 
 
 
@@ -546,6 +575,7 @@ lives=1
 fruit_time=None
 game_over=False
 ready=True
+animation=-1
 pacman = Pacman()
 blinky = Blinky(pacman)
 pinky = Pinky(pacman)
@@ -555,7 +585,7 @@ clyde = Clyde(pacman)
 init_grid()
 draw_background()
 write_number()
-display_img()
+display_background()
 draw_dots()
 display_score()
 display_lives()
@@ -580,9 +610,12 @@ clyde.start_procedure(grid, screen, level)
 GHOSTEVENT = pygame.USEREVENT+1
 TIMEEVENT = pygame.USEREVENT+2
 PACMANEVENT = pygame.USEREVENT+3
+ANIMARIONEVENT = pygame.USEREVENT+4
 pygame.time.set_timer(event=GHOSTEVENT, millis=500)
 pygame.time.set_timer(event=TIMEEVENT, millis=1000)
 # pygame.time.set_timer(event=PACMANEVENT, millis=500)
+pygame.time.set_timer(event=ANIMARIONEVENT, millis=300)
+
 time_passed[0]=pygame.time.get_ticks()
 
 run  = True
@@ -594,7 +627,7 @@ while run:
         if event.type == pygame.MOUSEBUTTONDOWN:
             x,y=pygame.mouse.get_pos()
             print(y//cell_size, x//cell_size)             
-        if (event.type == pygame.KEYDOWN and not game_over):
+        if (event.type == pygame.KEYDOWN and not game_over and animation==-1):
             for i in range(len(INPUTS)):
                 if (event.key==INPUTS[i]):
                     if ready:
@@ -608,7 +641,7 @@ while run:
                     fruit_manager()
                     check_dots_eaten()
                     break
-        if (event.type == GHOSTEVENT and not game_over and not ready):
+        if (event.type == GHOSTEVENT and not game_over and not ready and animation==-1):
             blinky.move_ghost(grid, screen, level)
             pinky.move_ghost(grid, screen, level)
             inky.move_ghost(grid, screen, level)
@@ -616,16 +649,17 @@ while run:
             check_collision()
             fruit_manager()
             
-        if (event.type == TIMEEVENT and not game_over and not ready):
+        if (event.type == TIMEEVENT and not game_over and not ready and animation==-1):
             ghost_mode_manager()
 
-        if (event.type == PACMANEVENT and not game_over and not ready):
+        if (event.type == PACMANEVENT and not game_over and not ready and animation==-1):
             pacman.move_pacman(pacman.get_direction(), grid, screen)
             check_collision()
             display_score()
             fruit_manager()
             check_dots_eaten()
-
+        if (event.type == ANIMARIONEVENT and animation!=-1):
+            display_animation()
 
     pygame.display.flip()
     clock.tick(30)
