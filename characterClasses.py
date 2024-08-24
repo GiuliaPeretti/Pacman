@@ -135,6 +135,11 @@ class Ghost:
     def get_y_offset(self):
         return self.y_offset
 
+    def get_starting(self):
+        return self.starting
+    
+    def get_start_moves(self):
+        return self.start_moves
 
     def move_ghost(self, grid, screen, level):
         self.x_offset=-1
@@ -419,14 +424,14 @@ class Pinky(Ghost):
                         img="Ghosts\Pinky_left.png"   
             img = pygame.image.load(img).convert()
             img = pygame.transform.smoothscale(img,(img.get_width()*resize_factor,img.get_height()*resize_factor))
-            screen.blit(img, (self.col*cell_size-(20*resize_factor),self.row*cell_size-(8*resize_factor)))
+            # screen.blit(img, (self.col*cell_size-(20*resize_factor),self.row*cell_size-(8*resize_factor)))
             grid[self.row][self.col].set_ghost(self.ghost_id)
             return
 
 
         self.direction=self.start_moves[self.starting]
         x,y,w,h=self.col*cell_size-(20*resize_factor), self.row*cell_size-(8*resize_factor), 42*resize_factor,42*resize_factor
-        pygame.draw.rect(screen, BLACK, (x,y,w,h))
+        # pygame.draw.rect(screen, BLACK, (x,y,w,h))
         grid[self.row][self.col].set_ghost(0)
         grid[self.row][self.col].draw_dot(screen, level)
 
@@ -458,7 +463,7 @@ class Pinky(Ghost):
 
         img = pygame.image.load(img).convert()
         img = pygame.transform.smoothscale(img,(img.get_width()*resize_factor,img.get_height()*resize_factor))
-        screen.blit(img, (self.col*cell_size-(20*resize_factor),self.row*cell_size-(8*resize_factor)))
+        # screen.blit(img, (self.col*cell_size-(20*resize_factor),self.row*cell_size-(8*resize_factor)))
         grid[self.row][self.col].set_ghost(self.ghost_id)
         self.starting+=1
 

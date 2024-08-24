@@ -516,14 +516,20 @@ init_grid()
 
 
 background = BackgroundSprite()
+high_score = HighScoreSprite()
 pacmanSprite = PacmanSprite(pacman)
 blinkySprite = BlinkySprite(blinky)
 pinkySprite = PinkySprite(pinky)
+inkySprite = InkySprite(inky)
+clydeSprite = ClydeSprite(clyde)
 game_group = pygame.sprite.Group()
 game_group.add(background)
+game_group.add(high_score)
 game_group.add(pacmanSprite)
 game_group.add(blinkySprite)
 game_group.add(pinkySprite)
+game_group.add(inkySprite)
+game_group.add(clydeSprite)
 
 # draw_grid(cell_size)
 #TODO: gestisci lo start dei fantasmi qua
@@ -579,6 +585,11 @@ while run:
     draw_background()
     game_group.update()
     game_group.draw(screen)
+    display_bottom_fruit()
+    display_score()
+    display_lives()
+    draw_dots()
+    
     #draw_grid(cell_size)
 
     pygame.display.flip()
