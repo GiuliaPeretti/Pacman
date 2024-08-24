@@ -174,10 +174,11 @@ class Ghost:
 
         if self.mode==2:
             valids=self.get_valid_dir(grid)
+            if len(valids)==0:
+                return self.direction
             return random.choice(valids)
 
         
-        # if grid[self.row][self.col].is_intersection() or self.starting==4:
         self.set_target(grid)
 
         min=1000
@@ -191,7 +192,6 @@ class Ghost:
             target_y=self.target[0]
 
             dis = math.sqrt(((target_x-point_x)**2)+((target_y-point_y)**2))
-            # dis = math.sqrt(((target[0]-self.row+possible_dir[i][0])**2)+((target[1]-self.col+possible_dir[i][1])**2))
             
             if min > dis:
                 min = dis
@@ -204,7 +204,7 @@ class Ghost:
         for i in range (len(possible_dir)):
             row = self.row+possible_dir[i][0]
             col = self.col+possible_dir[i][1]
-            if (row>+0 and row<36 and col>=0 and col<28)and (not grid[row][col].is_wall()):
+            if (self.col==28 or self.col==-1) or ((row>=0 and row<36 and col>=0 and col<28) and (not grid[row][col].is_wall())):
                 valids.append(i)
         match (self.direction):
             case 0:
@@ -315,7 +315,6 @@ class Pinky(Ghost):
                 self.target=[0,3]
             case 1:
                 #Chase
-                # if self.target==[self.row,self.col] or self.target==[None,None]:
                 pacman_pos=self.pacman.get_position()
                 pacman_dir=self.pacman.get_direction()
                 match(pacman_dir):

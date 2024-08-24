@@ -47,7 +47,7 @@ class ReadySprite(pygame.sprite.Sprite):
             img = pygame.image.load("Background\\Ready.png").convert()
             self.image = pygame.transform.smoothscale(img,(img.get_width()*resize_factor,img.get_height()*resize_factor))
         else:
-            self.image=pygame.Surface((180*resize_factor, 24*resize_factor))
+            self.image=pygame.Surface((1, 1))
             self.image.fill(BLACK)
 
 
@@ -63,20 +63,29 @@ class CellSprite(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.center = [col*cell_size+(cell_size/2)*resize_factor,row*cell_size+(cell_size/2)*resize_factor]
         self.cell
+        self.col=col
+        self.row=row
 
     def update(self):
         match(self.cell.get_dot()):
             case 0:
-                self.image = pygame.Surface((cell_size,cell_size))
+                self.image = pygame.Surface((1,1))
                 self.image.fill(BLACK)
+                self.rect.center = [self.col*cell_size+(cell_size/2)*resize_factor, self.row*cell_size+(cell_size/2)*resize_factor]
+
             case 1:
                 #TODO: fix this
                 img = pygame.image.load("Fruits\\Dot.png").convert()
                 self.image = pygame.transform.smoothscale(img,(img.get_width()*resize_factor,img.get_height()*resize_factor))
- 
+                self.rect.center = [self.col*cell_size+(cell_size/2)*resize_factor, self.row*cell_size+(cell_size/2)*resize_factor]
+
             case 2:
                 img = pygame.image.load("Fruits\\Power_pill.png").convert()
                 self.image = pygame.transform.smoothscale(img,(img.get_width()*resize_factor,img.get_height()*resize_factor))
+                self.rect.center = [self.col*cell_size+(cell_size/2)*resize_factor, self.row*cell_size+(cell_size/2)*resize_factor]
+ 
+        
+        
         if (self.cell.get_fruit()):
             fruits=[
             "Fruits\\Cherry.png",
@@ -91,6 +100,7 @@ class CellSprite(pygame.sprite.Sprite):
 
             img = pygame.image.load(fruits[0]).convert()
             self.image = pygame.transform.smoothscale(img,(img.get_width()*resize_factor,img.get_height()*resize_factor))
+            self.rect.center = [self.col*cell_size+(cell_size/2)*resize_factor, self.row*cell_size+2*resize_factor]
 
 
 class PacmanSprite(pygame.sprite.Sprite):

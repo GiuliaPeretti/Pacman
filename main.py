@@ -7,11 +7,8 @@ from settings import *
 from characterClasses import *
 from Spriets import *
 
-#TODO: A ghost in Frightened mode also turns dark blue, moves much more slowly and can be eaten by Pac-Man
 #TODO: implementa livelli
-#TODO: ricontrolla meglio lo sfondo che secondo me hai sbagliato qualcosa
-#TODO: — ghosts can not choose to turn upwards from these tiles.    
-#TODO: controlla durata di Frightened
+#TODO:  cambia velocita dei fantasmi
 #TODO: Allinizio pacman e un cerchio al centro
 
 
@@ -472,7 +469,7 @@ def check_dots_eaten():
         inky.dot_limit_passed()
     elif (dots_eaten>=60 and level==1) or (dots_eaten>=50 and level==2) or level>2:
         clyde.dot_limit_passed()
-    if dots_eaten==24:
+    if dots_eaten==240:
         animation=0
 
 def display_game_over():
@@ -588,8 +585,6 @@ level_cleared_animation.add(animationSprite)
 
 
 
-# draw_grid(cell_size)
-#TODO: gestisci lo start dei fantasmi qua
 
 GHOSTEVENT = pygame.USEREVENT+1
 TIMEEVENT = pygame.USEREVENT+2
