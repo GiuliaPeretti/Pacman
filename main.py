@@ -347,6 +347,7 @@ def check_collision():
     global clyde
     global lives
     global game_over
+    global gameOverSprite
 
     ghosts_pos=[blinky.get_position(), pinky.get_position(), inky.get_position(), clyde.get_position()]
     if pacman.get_position() in ghosts_pos:
@@ -360,12 +361,13 @@ def check_collision():
             lives-=1
             display_lives()
             if lives==0:
-                blinky.clear_ghost(screen, grid, level)
-                pinky.clear_ghost(screen, grid, level)
-                inky.clear_ghost(screen, grid, level)
-                clyde.clear_ghost(screen, grid, level)
                 game_over=True
-                display_game_over()
+                gameOverSprite.set_game_over(True)
+                blinkySprite.set_show(False)
+                pinkySprite.set_show(False)
+                inkySprite.set_show(False)
+                clydeSprite.set_show(False)
+                pacmanSprite.set_show(False)
                 if grid[20][13].get_fruit():
                     grid[20][13].draw_dot(screen, level)
 
@@ -473,7 +475,7 @@ def check_dots_eaten():
         animation=0
 
 def display_game_over():
-    img = pygame.image.load("Game_over.png").convert()
+    img = pygame.image.load("Background\\Game_over.png").convert()
     img = pygame.transform.smoothscale(img,(img.get_width()*resize_factor,img.get_height()*resize_factor))
     screen.blit(img, (9*cell_size,20*cell_size))
 
@@ -557,6 +559,8 @@ init_grid()
 background = BackgroundSprite()
 high_score = HighScoreSprite()
 readySprite = ReadySprite()
+gameOverSprite = GameOverSprite()
+gameOverSprite.set_game_over(False)
 pacmanSprite = PacmanSprite(pacman)
 blinkySprite = BlinkySprite(blinky)
 pinkySprite = PinkySprite(pinky)
@@ -571,6 +575,7 @@ for row in range (len(grid)):
             cellSprite = CellSprite(grid[row][col], row, col)
             game_group.add(cellSprite)
 game_group.add(readySprite)
+game_group.add(gameOverSprite)
 game_group.add(pacmanSprite)
 game_group.add(blinkySprite)
 game_group.add(pinkySprite)
